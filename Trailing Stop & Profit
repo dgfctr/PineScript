@@ -1,0 +1,108 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// author & developer : © dg_factor [07.06.2023, Istanbul]
+
+// Aşağıdaki komut, dinamik stop-loss ve sabit profit seviyelerinin strategy() komutu üzerinde nasıl inşa edilebileceğine örnek teşkil eder.
+
+// TANIM : 
+// Trailing-Stop sinyal yönünüze bağlı olarak fiyatı (aşağıdan veya yukarıdan) belli bir mesafe ile takip eden stop-loss mekanizmasıdır.
+// Fiyatın sinyal yönünün tersinde hareket etmesi halinde Trailing-Stop "ölü taklidi" yaparak yatay bir çizgi haline gelir.
+// Bu anlamıyla zararı minimize etmek üzerine kuruludur.  
+
+// YÖNTEM : 
+// Kendi stratejinize entegre etmek için alım-satım sinyallerini "long" ve "short" değişkenleriyle tanımlayın.
+// (Aşağıda örnek olarak hareketli ortalama kesişimi kullanıldı.)
+// Stop ve Profit seviyeleri bu iki değişkene ve input tercihlerine bağlı olarak çizilir.
+
+// NOT : 
+// Daha önce yayınladığım "Fixed Stop & Profit" komut dosyasında bulunan etiket opsiyonu, Stop'un dinamik karakteri nedeniyle bu komut dosyasına eklenmedi. 
+
+//@version=5
+strategy(title='Trailing Stop & Profit', overlay=true,
+  initial_capital=100000, 
+  default_qty_type=strategy.percent_of_equity, default_qty_value=100,  
+  commission_type=strategy.commission.percent, commission_value=0.04)
+//
+
+// ━━━━━━━━━━━
+// long  = ...
+// short = ...
+// ━━━━━━━━━━━
+
+// ━━━━━━━━━━━ Örnek ━━━━━━━━━━━
+d1 = ta.sma(close, 50)
+d2 = ta.sma(close, 200)
+long  = ta.crossover(d1, d2)
+short = ta.crossunder(d1, d2)
+// Kontrol (Ortalama)
+plot(d1, "d1", #2962ff85, display=display.none)
+plot(d2, "d2", #ff980085, display=display.none)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Giriş ve Çıkış Emirleri
+if long
+    strategy.close(id='SHORT', comment='Short Çıkış')
+    strategy.entry(id='LONG', direction=strategy.long, comment='Long Giriş')
+if short
+    strategy.close(id='LONG', comment='Long Çıkış')
+    strategy.entry(id='SHORT', direction=strategy.short, comment='Short Giriş')
+//
+
+// Strateji Data
+giris_fiyati = strategy.opentrades.entry_price(strategy.opentrades - 1)                 // float                   
+islem_yonu   = strategy.position_size > 0 ? 1 : strategy.position_size < 0 ? -1 : 0     // int 
+long_giris   = islem_yonu == 1 and (islem_yonu[1] == -1 or islem_yonu[1] == 0)          // bool
+short_giris  = islem_yonu == -1 and (islem_yonu[1] == 1 or islem_yonu[1] == 0)          // bool
+
+// Stop & Profit Inputs
+gr_tsp = "FIXED STOP  PROFIT"
+stop_yuzde = input.float(title="Stop %", defval=5.0, group=gr_tsp)
+R = input.float(title="R", defval = 2.5, group=gr_tsp, tooltip="R = takeprofit% / stoploss%")
+kaynak = open
+
+// Trailing Stop 
+long_stop  = kaynak * (1 - stop_yuzde / 100)
+short_stop = kaynak * (1 + stop_yuzde / 100)
+pls = nz(long_stop[1], long_stop)
+pss = nz(short_stop[1], short_stop)
+long_stop  := islem_yonu == 1  ? math.max(long_stop, pls) : na
+short_stop := islem_yonu == -1 ? math.min(short_stop, pss) : na
+
+// Take Profit
+var tlp = float(na)
+var tsp = float(na)
+pbl = kaynak * (1 + stop_yuzde / 100 * R)
+pbs = kaynak * (1 - stop_yuzde / 100 * R)
+if long_giris
+    tlp := pbl
+if short_giris
+    tsp := pbs
+long_profit  = islem_yonu == 1  ? tlp : na
+short_profit = islem_yonu == -1 ? tsp : na
+
+// Stop & Profit Emirleri
+if islem_yonu == 1 and ta.crossunder(low, long_stop)
+    strategy.close(id='LONG', comment='Long Stop')
+if islem_yonu == 1 and ta.crossover(high, long_profit)
+    strategy.close(id='LONG', comment='Long Profit')
+if islem_yonu == -1 and ta.crossover(high, short_stop)
+    strategy.close(id='SHORT', comment='Short Stop')
+if islem_yonu == -1 and ta.crossunder(low, short_profit)
+    strategy.close(id='SHORT', comment='Short Profit')
+//
+
+// Plot Giriş Fiyatı
+plot(giris_fiyati, title="Giriş Fiyatı", color=#6200b3, style=plot.style_circles, display=display.none)
+
+// Plot Long Stop & Profit
+plot(long_stop, title="Long Stop", color=#bb0000, linewidth=2, style=plot.style_linebr)
+plot(long_profit, title="Long Profit", color=#00bb00, linewidth=2, style=plot.style_linebr)
+
+// Plot Short Stop & Profit
+plot(short_stop, title="Short Stop", color=#bb0000, linewidth=2, style=plot.style_linebr)
+plot(short_profit, title="Short Profit", color=#00bb00, linewidth=2, style=plot.style_linebr)
+
+// Bar Renkleri
+barcolor(islem_yonu == 1 ? #00bb00 : islem_yonu == -1 ? #bb0000 : #686868)
+
+// Bitti
+plotshape(barstate.isfirst, "@ dg_factor", color=#13172200, editable=false)
