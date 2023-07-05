@@ -1,0 +1,97 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// author & developer : © dg_factor [07.05.2023, Istanbul]
+
+// Aşağıdaki komut, basit koşullu yapıların inşasına örnek olarak hazırlandı. 
+// Birkaç yerleşik fonksiyonun tanımı da var. 
+// Mantık anlaşılırsa dili daha etkili kullanmak için yardımcı olabilir.
+
+//@version=5
+indicator("Koşul Uygulamaları", overlay=true)
+plotshape(barstate.isfirst, "@ dg_factor", color=#13172200, editable=false)
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Dinamik Ortalama Türü ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ortalama_turu_1 = input.string(title="Ortalama Türü", options=["SMA", "EMA", "WMA"], defval="EMA", inline="1")
+ortalama_turu_2 = input.string(title="Ortalama Türü", options=["SMA", "EMA", "WMA"], defval="SMA", inline="2")
+
+uzunluk_1 = input.int(title="Uzunluk", defval=50,  inline="1")
+uzunluk_2 = input.int(title="Uzunluk", defval=200, inline="2")
+
+a = 
+  ortalama_turu_1 == "SMA" ? ta.sma(close, uzunluk_1) : 
+  ortalama_turu_1 == "EMA" ? ta.ema(close, uzunluk_1) : 
+  ortalama_turu_1 == "WMA" ? ta.wma(close, uzunluk_1) : 
+  na 
+//
+
+b = 
+  ortalama_turu_2 == "SMA" ? ta.sma(close, uzunluk_2) : 
+  ortalama_turu_2 == "EMA" ? ta.ema(close, uzunluk_2) : 
+  ortalama_turu_2 == "WMA" ? ta.wma(close, uzunluk_2) : 
+  na 
+//
+
+plot(a, "ortalama 1", color.blue)
+plot(b, "ortalama 2", color.orange)
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ta.crossover() & ta.crossunder() ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+long  = a > b and a[1] <= b[1]  // ta.crossover(a, b)
+short = a < b and a[1] >= b[1]  // ta.crossunder(a, b)
+kesisim = long or short
+plotshape(long, "Long ", shape.triangleup, location.belowbar, #00ff00, size=size.tiny)
+plotshape(short, "Short ", shape.triangledown, location.abovebar, #ff0000, size=size.tiny)
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Sinyal Sayısı ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+sinyal_sayisi = ta.cum(kesisim ? 1 : 0)
+renk = a > b ? #00bb00 : a < b ? #bb0000 : #686868
+sinyal_sayisi_etiket = kesisim ? label.new(bar_index, high, str.tostring(sinyal_sayisi), color=#00000000, textcolor=renk, size=size.large) : na
+barcolor(sinyal_sayisi < 1 ? na : renk, title="Bar Renklendir", display=display.none)
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ta.max() & ta.min() ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Grafikteki En Yüksek ve En Düşük Fiyat (ATH & ATL)
+ath = 0.0
+atl = 0.0
+ath := bar_index == 0 ? high : high > ath[1] ? high : ath[1]
+atl := bar_index == 0 ? low  : low  < atl[1] ? low  : atl[1]
+plot(ath, "ATH", #00bb00, trackprice=true, offset=-9999, display=display.none)
+plot(atl, "ATL", #bb0000, trackprice=true, offset=-9999, display=display.none)
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━ Ardışık İki Sinyal Arasındaki Max ve Min Fiyat ━━━━━━━━━━━━━━━━━━━━━━━━━
+
+var yuksek = 0.0
+var dusuk  = 0.0
+yuksek := sinyal_sayisi != sinyal_sayisi[1] ? high : math.max(high, yuksek)
+dusuk  := sinyal_sayisi != sinyal_sayisi[1] ? low  : math.min(low, dusuk)
+plot(sinyal_sayisi < 1 ? na : yuksek, "Yüksek", #00bb00, style=plot.style_circles, display=display.none)
+plot(sinyal_sayisi < 1 ? na : dusuk,   "Düşük", #bb0000, style=plot.style_circles, display=display.none)
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ta.barssince() & ta.valuewhen() ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Barssince Fonksiyon Yapısı
+var int sinyal_uzakligi = na
+sinyal_uzakligi := kesisim ? 0 : sinyal_uzakligi + 1    // sinyal_uzakligi = ta.barssince(kesisim)
+
+// Data Uygulamaları
+long_sinyali_olustugunda_kapanis_fiyati = ta.valuewhen(long, close, 0)
+sondan_ikinci_long_sinyali_olustugunda_kapanis_fiyati = ta.valuewhen(long, close, 2)
+sondan_ucuncu_long_sinyalinden_bes_bar_sonraki_kapanis_fiyati = ta.valuewhen(ta.barssince(long) == 5, close, 3)
+
+// Koşul Uygulamaları
+ellilik_ortalamanin_uzerinde_iki_kapanis_kosulu = ta.barssince(ta.crossover(close, ta.sma(close, 50))) == 1 and close > ta.sma(close, 50)
+long_pozisyondayken_son_on_bardir_min_yuzde_iki_yukselis_kosulu = ta.barssince(long) <= 10 and close >= ta.valuewhen(long, close, 0) * 1.02
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ math.sum() Uygulamaları ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// math.sum(kosul ? 1 : 0, n) == n
+// Yukarıdaki yapı "herhangi bir koşul son kaç ardışık bardır gerçekleşiyor?" sorusunu cevaplar.
+// Koşul her gerçekleştiğinde fonksiyon 1 değeri üretir ve bu değerleri toplar. 
+// Eğer toplam sonuç n ise koşul son n bardır gerçekleşmiş demektir.
+
+son_bes_bardir_yukselis_kosulu = math.sum(close > close[1] ? 1 : 0, 5) == 5
+son_bes_barin_herhangi_dort_tanesinde_yukselis_kosulu = math.sum(close > close[1] ? 1 : 0, 5) == 4
+son_bes_bardir_dusus_ve_ardindan_son_uc_bardir_yukselis_kosulu = math.sum(close > close[1] ? 1 : 0, 5) == 5 and math.sum(close < close[1] ? 1 : 0, 8) == 3
+son_on_bardir_tek_barda_min_yuzde_iki_yukselis_kosulu = math.sum((close - close[1]) / close[1] * 100 >= 2 ? 1 : 0, 10) == 1
+son_uc_bardir_ellilik_ortalamanin_uzerinde_kapanis_kosulu = math.sum(close > ta.sma(close, 50) ? 1 : 0, 3) == 3 and math.sum(close > ta.sma(close, 50) ? 1 : 0, 4) == 3
