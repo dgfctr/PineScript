@@ -1,0 +1,30 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// author : © dg_factor [16.06.2023, Istanbul]
+
+// Aşağıdaki komut, VAR/VIDYA hareketli ortalama türünü bir fonksiyon şeklinde sunar.
+// Tradingview'da yayınlanmış VAR (değişken ortalama) versiyonlarının hepsi grafiğin ilk barında sıfır değeri ile başlar, ilerleyen barlarda fiyata yaklaşır. 
+// Bu durum backtestlerde anlamsız sonuçlar doğurabilir. 
+// Sorunsuz versiyonu aşağıda 🧐
+
+//@version=5
+indicator("VAR (Değişken Ortalama)", overlay=true)
+
+kaynak  = close
+uzunluk = input.int(200)
+
+// VAR - Variable Index Dynamic Adaptive Moving Average [Tushar S. Chande]
+f_var(data, u) =>
+    x = ta.sma(data, u)
+    a = 9
+    b = data > data[1] ? data - data[1] : 0
+    c = data < data[1] ? data[1] - data : 0
+    d = math.sum(b, a)
+    e = math.sum(c, a)
+    f = nz((d - e) / (d + e))
+    g = math.abs(f)
+    k = 2 / (u + 1)
+    r = 0.0
+    r := u == 1 ? data : na(r[1]) ? x : g * k * (data - nz(r[1])) + nz(r[1])
+//
+
+plot(f_var(kaynak, uzunluk), title="VAR")
