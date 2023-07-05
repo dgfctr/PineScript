@@ -1,0 +1,178 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+
+// Creator: Tim Tillson (T3 Moving Average)
+// Author: @dg_factor [09.12.2021]
+
+// UYARI : 
+// Geliştirme amaçlıdır. Risk yönetimi olmaksızın alım-satım stratejisi yerine ikame edilemez.
+
+// AÇIKLAMALAR
+// Orijinal hasaplamalara sadık kalınarak farklı derecelerde (1-5) binom açılımları uygulandı. 
+// EMA dahil, toplamda yedi farklı hareketli ortalama türü üzerinde çalışabilen dinamik bir yapı inşa edildi. 
+// Derece ve ortalama türü, opsiyonel birer parametre olarak kullanıcı tercihine sunuldu. 
+// Diğer detaylar en aşağıda.
+
+//@version=5
+indicator(title='Degreed Tillson Moving Average', overlay=true)
+
+// Inputs
+src     = close
+length  = input(title='Length', defval=200)
+factor  = input.float(title='Factor', defval=0.7, step=0.1)
+degree  = input.int(title='Degree', minval=1, maxval=5, defval=3, tooltip='1-5', group="DEGREE & TYPE")
+ma_type = input.string(title="Type", defval="EMA", options=["EMA", "RMA", "EVMA", "GAUS", "HULLT", "MCGD", "TSF"], group="DEGREE & TYPE")
+
+// MA Functions
+
+// EVMA [Elastic Volume Weighted Moving Average]
+f_evma(data, u1) =>
+    x = ta.sma(data, u1)
+    a = math.sum(volume, u1)
+    r = 0.0
+    r := na(r[1]) ? x : nz(r[1]) * (a - volume) / a + volume * data / a
+//
+
+// GAUS [Ehlers - Gaussian Filter]
+f_gaus(data, u1) =>
+    a = (1 - math.cos(2 * math.pi / u1)) / (math.sqrt(2) - 1)
+    b = -a + math.sqrt(math.pow(a, 2) + 2 * a)
+    r = 0.0
+    r := na(r[1]) ? data : math.pow(b, 2) * data + 2 * (1 - b) * nz(r[1]) - math.pow(1 - b, 2) * nz(r[2])
+//
+
+// HULLT [Triple Hull Moving Average]    
+f_hullt(data, u1) =>
+    a = u1 < 3 ? 1 : u1 / 2
+    b = u1 < 3 ? 1 : u1 / 3
+    r = ta.wma(ta.wma(data, b) * 3 - ta.wma(data, a) - ta.wma(data, u1), u1)
+//
+
+// MCGD [McGinley Dynamic Moving Average]
+f_mcgd(data, u1) =>
+    a = ta.ema(data, u1)
+    r = 0.0
+    r := na(r[1]) ? a : r[1] + (data - r[1]) / (u1 * math.pow(data / r[1], 4))
+//
+
+// TSF [Time Series Function]
+f_tsf(data, u1) => 
+      2 * ta.linreg(data, u1, 0) - ta.linreg(data, u1, 1)
+
+// MA Return
+f_ma(data, u1) => 
+      ma_type == "EMA"   ? ta.ema(data, u1)  :
+      ma_type == "EVMA"  ? f_evma(data, u1)  :
+      ma_type == "GAUS"  ? f_gaus(data, u1)  :
+      ma_type == "HULLT" ? f_hullt(data, u1) :
+      ma_type == "MCGD"  ? f_mcgd(data, u1)  :
+      ma_type == "RMA"   ? ta.rma(data, u1)  :      
+      ma_type == "TSF"   ? f_tsf(data, u1)   :
+      na
+//
+
+// Variables
+x = factor
+y = factor + 1
+z = f_ma(src, length)
+n = f_ma(z, length)
+
+
+// Degreed Tillson MA Functions
+
+d1(src, length) =>
+    a0 = f_ma(n, length)
+    a1 = f_ma(a0, length)
+    b0 = -1 * 1 * math.pow(x, 1) * math.pow(y, 0)
+    b1 = +1 * 1 * math.pow(x, 0) * math.pow(y, 1)
+    r = b0 * a1 + b1 * a0
+//
+
+d2(src, length) =>
+    a0 = f_ma(n, length)
+    a1 = f_ma(a0, length)
+    a2 = f_ma(a1, length)
+    b0 = +1 * 1 * math.pow(x, 2) * math.pow(y, 0)
+    b1 = -1 * 2 * math.pow(x, 1) * math.pow(y, 1)
+    b2 = +1 * 1 * math.pow(x, 0) * math.pow(y, 2)
+    r = b0 * a2 + b1 * a1 + b2 * a0
+//
+
+d3(src, length) =>
+    a0 = f_ma(n, length)
+    a1 = f_ma(a0, length)
+    a2 = f_ma(a1, length)
+    a3 = f_ma(a2, length)
+    b0 = -1 * 1 * math.pow(x, 3) * math.pow(y, 0)
+    b1 = +1 * 3 * math.pow(x, 2) * math.pow(y, 1)
+    b2 = -1 * 3 * math.pow(x, 1) * math.pow(y, 2)
+    b3 = +1 * 1 * math.pow(x, 0) * math.pow(y, 3)
+    r = b0 * a3 + b1 * a2 + b2 * a1 + b3 * a0
+//
+
+d4(src, length) =>
+    a0 = f_ma(n, length)
+    a1 = f_ma(a0, length)
+    a2 = f_ma(a1, length)
+    a3 = f_ma(a2, length)
+    a4 = f_ma(a3, length)
+    b0 = +1 * 1 * math.pow(x, 4) * math.pow(y, 0)
+    b1 = -1 * 4 * math.pow(x, 3) * math.pow(y, 1)
+    b2 = +1 * 6 * math.pow(x, 2) * math.pow(y, 2)
+    b3 = -1 * 4 * math.pow(x, 1) * math.pow(y, 3)
+    b4 = +1 * 1 * math.pow(x, 0) * math.pow(y, 4)
+    r = b0 * a4 + b1 * a3 + b2 * a2 + b3 * a1 + b4 * a0
+//
+
+d5(src, length) =>
+    a0 = f_ma(n, length)
+    a1 = f_ma(a0, length)
+    a2 = f_ma(a1, length)
+    a3 = f_ma(a2, length)
+    a4 = f_ma(a3, length)
+    a5 = f_ma(a4, length)
+    b0 = -1 * 1  * math.pow(x, 5) * math.pow(y, 0)
+    b1 = +1 * 5  * math.pow(x, 4) * math.pow(y, 1)
+    b2 = -1 * 10 * math.pow(x, 3) * math.pow(y, 2)
+    b3 = +1 * 10 * math.pow(x, 2) * math.pow(y, 3)
+    b4 = -1 * 5  * math.pow(x, 1) * math.pow(y, 4)
+    b5 = +1 * 1  * math.pow(x, 0) * math.pow(y, 5)
+    r = b0 * a5 + b1 * a4 + b2 * a3 + b3 * a2 + b4 * a1 + b5 * a0
+//
+
+// Out
+out = 
+  degree == 1  ? d1(src, length) : 
+  degree == 2  ? d2(src, length) : 
+  degree == 3  ? d3(src, length) : 
+  degree == 4  ? d4(src, length) : 
+  degree == 5  ? d5(src, length) :  
+  na
+//
+
+// Print
+plot(out, color=#3081a5, title='Tillson MA')
+barcolor(out > out[1] ? #00bb00 : out < out[1] ? #bb0000 : #333333)
+
+// Bitti
+plotshape(barstate.isfirst, title="@ dg_factor", color=#13172200, editable=false)
+
+// DETAYLAR
+
+// T3'teki "3" nedir?
+//      T3 Moving Average, iç içe kurgulanmış üssel hareketli ortalamaların üçüncü dereceden binom açılımı alınarak hesaplanır. 
+//      T3 şeklinde adlandırılmasının nedeni budur.
+//      Ufak bir matematiksel müdahale ile farklı dereceler kodlanabilir, netekim bu indikatör yöntem olarak çarpanlara ayırma önermektedir.
+
+// Ömer Hayyam'ın mevzuyla ne ilgisi var?
+//      Binom açılımı, Pascal Üçgeni olarak bilinen bir tamsayı dizisine dayanır.
+//      İsmi Pascal'la anılsa da, bu üçgensel sayı dizisinin ilk olarak Ömer Hayyam'ın hesaplamalarında tanımlandığı kabul edilir.  
+//      Pascal üçgeninin kartezyen toplamları kullanılarak Fibonacci dizisini elde etmek de mümkündür.
+//      Yayılım örüntülerini açıklamadaki gücü bakımından Pascal Üçgeni sıkça kullanılan bir argümandır. 
+//      Özetle finansal algoritmalar Hayyam'a çok şey borçludur. (Hemen şarkısını da açalım : https://www.youtube.com/watch?v=H0JTGAcACuk)
+
+// Ne işe yarayacak?
+//      Başıma bir iş gelmeyecekse; 
+//      Trendi genellikle yakalar, ama terste bırakma ihtimali de yüksektir. Risk yönetimi bu yüzden gerekli.
+//      Farklı dereceler fiyat frekansını üretebilecek yöntemlere katkı sunabilir.
+//      Hatta ortalamaya ait önceki tepe ve diplerin yeni sinyal yönü için geçerli destek/direnç seviyeleri olarak çalıştığı da oluyor.
+//      Tabi herhangi bir işe yaramayabilir de :).
