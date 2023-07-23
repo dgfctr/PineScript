@@ -5,9 +5,9 @@
 // ╚═══════════════════════════════════════════════════════════╝
 
 // Çoklu tarayıcı komutudur. Tradingview'da yayınlamıştım ama genelde saçma gerekçelerle erişimi kıstılıyorlar. 
-// Aşağıdaki linkte Tradingview için hazrıladığım ingilizce bir kullanım kılavuzu var, ondan yararlanabilirsiniz.
+// Aşağıdaki linkte Tradingview için hazırladığım İngilizce bir açıklama var, ondan yararlanabilirsiniz.
 // https://gist.github.com/dgfctr/671842047f269ee0a42cac98809bb3a1
-// Kendi stratejilerinize nasıl entegre edebileceğinizle ilgili Twitter'a ayrıca bir video düşer birkaç güne...
+// Kendi stratejilerinize nasıl entegre edebileceğinizle ilgili Twitter'a ayrıca bir video da eklerim muhtemelen.
 
 //@version=5
 indicator("Any Screener", overlay=true)
