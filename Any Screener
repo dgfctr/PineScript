@@ -4,10 +4,15 @@
 // ║  Author & Developer : © dg_factor [18.07.2023, Istanbul]  ║
 // ╚═══════════════════════════════════════════════════════════╝
 
-// Çoklu tarayıcı komutudur. Tradingview'da yayınlamıştım ama genelde saçma gerekçelerle erişimi kıstılıyorlar. 
-// Aşağıdaki linkte Tradingview için hazırladığım İngilizce bir açıklama var, ondan yararlanabilirsiniz.
-// https://gist.github.com/dgfctr/671842047f269ee0a42cac98809bb3a1
-// Kendi stratejilerinize nasıl entegre edebileceğinizle ilgili Twitter'a ayrıca bir video da eklerim muhtemelen.
+// Çoklu tarayıcı komutudur. 
+// Tanımlı alım-satım koşullarını 15 farklı sembol için tarayıp hangi koşulun kaç bar önce gerçekleştiğini derleyip sunar.
+// Kendi koşullarınızı entegre etmenize olanak sağlayan dinamik bir yapısı vardır. Aşağıdaki linkelere göz atabilirsiniz.
+// GENEL KULLANIM : https://twitter.com/dg_factor/status/1683150600643461121?s=20
+// ENTEGRASYON 1  : https://twitter.com/dg_factor/status/1685325255919730689?s=20
+// ENTEGRASYON 2  : https://twitter.com/dg_factor/status/1685985262793302016?s=20
+
+// Tradingview linki :  
+// https://www.tradingview.com/script/6pC1ZQdd-Any-Screener-Multiple/ 
 
 //@version=5
 indicator("Any Screener", overlay=true)
