@@ -8,7 +8,7 @@
 
 // GELİŞTİRMELER
 // Çoğu indikatör grafikteki bar sayısından daha büyük bir uzunluk değeri girildiğinde hata verir. 
-// Aşağıdaki x ve n değişkenlerini inceledeğinizde bu sorunun basit bir çözümünü bulabilirsiniz.
+// Aşağıdaki x ve n değişkenlerini incelediğinizde bu sorunun basit bir çözümünü bulabilirsiniz.
 
 // UYARI
 // Mevcut bardaki "Yüksek" ve "Düşük" kaynak değeri, belirtilen uzunluktaki en yüksek veya en düşük değere sahipse, seviyeler buna göre değişecektir. 
