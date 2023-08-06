@@ -1,0 +1,114 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// Author & Developer : dg_factor [06.08.2023]
+
+// TANIM
+// Geliştirme ve eğitim amaçlıdır.
+// Aşağıdaki komut dosyası herhangi bir data serisi üzerinde auto Fibonacci seviyelerinin nasıl çizdirilebileceğine örnek teşkil eder.
+// Seviyeler, datanın belirtilen uzunluktaki en yüksek ve en düşük değerlerine göre tanımlanır. 
+
+// GELİŞTİRMELER
+// Çoğu indikatör grafikteki bar sayısından daha büyük bir uzunluk değeri girildiğinde hata verir. 
+// Aşağıdaki x ve n değişkenlerini inceledeğinizde bu sorunun basit bir çözümünü bulabilirsiniz.
+
+//@version=5
+indicator("Adaptive Fibonacci Retracement")
+
+// Kaynak Inputs
+g1 = "KAYNAK GİRİNİZ"
+g2 = "KONFİGÜRASYON"
+t0 = "Hesaplamada etkisi yoktur, sadece çizim için kullanılır."
+yuksek  = input(title="Yüksek", defval=ohlc4, group=g1)
+dusuk   = input(title="Düşük", defval=ohlc4, group=g1)
+data    = input(title="Data", defval=ohlc4, group=g1, tooltip=t0)
+
+// Konfigürasyon Inputs
+uzunluk = input.int(title="Uzunluk  ", defval=200, group=g2, inline="0")
+
+r_0000 = input.color(defval=#ff5252, title="A", group=g2, inline="1") 
+r_0236 = input.color(defval=#2962ff, title="B", group=g2, inline="2")
+r_0382 = input.color(defval=#794100, title="C", group=g2, inline="3")
+r_0500 = input.color(defval=#008f6e, title="D", group=g2, inline="4")
+r_0618 = input.color(defval=#673ab7, title="E", group=g2, inline="5")
+r_0786 = input.color(defval=#8b9600, title="F", group=g2, inline="6")
+r_1000 = input.color(defval=#138800, title="G", group=g2, inline="7")
+
+k_0000 = input.float(defval=0.000, title="", group=g2, inline="1")
+k_0236 = input.float(defval=0.236, title="", group=g2, inline="2")
+k_0382 = input.float(defval=0.382, title="", group=g2, inline="3")
+k_0500 = input.float(defval=0.500, title="", group=g2, inline="4")
+k_0618 = input.float(defval=0.618, title="", group=g2, inline="5")
+k_0786 = input.float(defval=0.786, title="", group=g2, inline="6")
+k_1000 = input.float(defval=1.000, title="", group=g2, inline="7")
+
+// Hesaplamalar
+bool yy = false
+bool dd = false
+var float _h = na
+var float _l = na
+if yuksek > nz(_h, 1e-10)
+    _h := yuksek
+    yy := true
+yu = ta.barssince(yy)
+if dusuk < nz(_l, 1e10)
+    _l := dusuk
+    dd := true
+du = ta.barssince(dd)
+bool x = uzunluk >= bar_index + 1    
+int  n = x ? 1 : uzunluk
+u_h  = ta.highest(yuksek, n)
+u_l  = ta.lowest(dusuk, n)
+u_yu = -ta.highestbars(yuksek, n)
+u_du = -ta.lowestbars(dusuk, n)
+hd = x ? yu : u_yu
+ld = x ? du : u_du 
+_y = x ? _h : u_h
+_d = x ? _l : u_l
+y1 = hd < ld ? _d  : _y
+y2 = hd < ld ? _y : _d
+k_lin = y1 - y2
+fib_0000 = y2 + k_lin * k_0000
+fib_0236 = y2 + k_lin * k_0236
+fib_0382 = y2 + k_lin * k_0382
+fib_0500 = y2 + k_lin * k_0500
+fib_0618 = y2 + k_lin * k_0618
+fib_0786 = y2 + k_lin * k_0786
+fib_1000 = y2 + k_lin * k_1000
+
+// Plots
+plot(data, title="data", color=color.silver)
+plot(fib_0000, title="A", color=r_0000, linewidth=2, offset=-9999, trackprice=true, editable=false)
+plot(fib_0236, title="B", color=r_0236, linewidth=2, offset=-9999, trackprice=true, editable=false)
+plot(fib_0382, title="C", color=r_0382, linewidth=2, offset=-9999, trackprice=true, editable=false)
+plot(fib_0500, title="D", color=r_0500, linewidth=2, offset=-9999, trackprice=true, editable=false)
+plot(fib_0618, title="E", color=r_0618, linewidth=2, offset=-9999, trackprice=true, editable=false)
+plot(fib_0786, title="F", color=r_0786, linewidth=2, offset=-9999, trackprice=true, editable=false)
+plot(fib_1000, title="G", color=r_1000, linewidth=2, offset=-9999, trackprice=true, editable=false)
+
+// Katsayı hesaplama detayları (sadece dört tanesi yaygın olarak kullanılır) : 
+// ...
+// ✘   0,090  ⟶  0,618^5
+// ✘   0,145  ⟶  0,618^4
+// ✔   0,236  ⟶  0,618^3
+// ✔   0,382  ⟶  0,618^2
+// ✔   0,618  ⟶  0,618^1
+// ✔   0,786  ⟶  0,618^(1/2)
+// ✘   0,851  ⟶  0,618^(1/3)
+// ✘   0,886  ⟶  0,618^(1/4)
+// ✘   0,908  ⟶  0,618^(1/5)
+// ...
+
+// NOT : 
+// Real Time Data kullanmak isteyenler aşağıdaki dizi yapısından yararlanabilirler. 
+// _max & _min değişkenleri datanın bar içinde görülmüş en yüksek ve en düşük değerlerini döndürür. 
+// Fibonacci seviyeleri bu değişkenlere dayalı olarak yeniden hesaplanabilir. Ve fakat;
+// Dizi yapısı geçmişe dönük değer üretmez. Sonuçlar, indikatör grafiğe yüklendikten sonra çizilmeye başlar. 
+// Kullanmadan önce 1 dakikalık grafikte çalışma mantığının gözlenmesi önerilir.
+
+// varip float[] dizi = array.new_float(0)
+// if barstate.isnew
+//     array.clear(dizi)
+// array.push(dizi, data)
+// float _max = array.max(dizi)
+// float _min = array.min(dizi)
+// plot(_max, title="max", color=color.lime)
+// plot(_min, title="min", color=color.red)
