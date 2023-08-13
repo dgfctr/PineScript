@@ -2,7 +2,7 @@
 // Author & Developer : dg_factor [13.08.2023]
 
 // AÇIKLAMA
-// Geliştirme amaçlıdır, alım-satım stratejileri yerine ikame edilemez.
+// Geliştirme amaçlıdır, alım-satım stratejisi yerine ikame edilemez.
 // Aşağıdaki komut herhangi bir data serisi üzerinde Lineer Regresyon Kanalı'nın çizimine örnek teşkil eder.
 // Lineer Regresyon, aralarında neden-sonuç ilişkisi bulunan bağımlı ve bağımsız değişkenlerden;
 // bağımsız olanlara dayalı olarak bağımlı değişkeni tahmin etmek için kullanılan bir analiz yöntemidir.
