@@ -1,0 +1,85 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// Author & Developer : dg_factor [13.08.2023]
+
+// AÇIKLAMA
+// Geliştirme amaçlıdır, alım-satım stratejileri yerine ikame edilemez.
+// Aşağıdaki komut herhangi bir data serisi üzerinde Lineer Regresyon Kanalı'nın çizimine örnek teşkil eder.
+// Lineer Regresyon, aralarında neden-sonuç ilişkisi bulunan bağımlı ve bağımsız değişkenlerden;
+// bağımsız olanlara dayalı olarak bağımlı değişkeni tahmin etmek için kullanılan bir analiz yöntemidir.
+// Bir sebebe bağlı olarak ileriye yönelik tahmin amaçlar.
+// Regresyon Kanalı direnç ve destek seviyelerinin belirlenmesi amacıyla; (örneklem) sapma değeri ve onun katlarına dayalı olarak hesaplanır.
+
+// UYARI (REPAINT)
+// Repaint kısaca, bir datanın geçmiş değerlerinin sonraki barlarda değişmesi olarak tanımlanabilir.
+// Regresyon kanalı her barda dizinin kaydırılmasıyla hesaplanan dinamik bir göstergedir, dolayısıyla repaint yapar. 
+// "Statik Kanal" hareket etmez, indikatörü çalıştırıdığınız ana ait seviyeleri "dondurur".
+
+//@version=5
+indicator("Adaptive Linear Regression")
+
+g1 = "KAYNAK GİRİNİZ"
+data    = input(title="Data", defval=close, group=g1)
+
+t1 =  
+  "İndikatörün çalıştırıldığı an itibariyle oluşmuş seviyeleri çizer. " +  
+  "(Belirtilen uzunluktaki kapanmış olan son bara göre çizim yapılır, açık olan bar hesaplamaya dahil değildir). " + 
+  "İndikatör ayarlarında herhangi bir değişiklik gerçekleştirdiğinizde Statik Kanal seviyeleri de güncellenecektir."
+g2 = "KONFİGÜRASYON"
+uzunluk = input.int(title="Uzunluk", defval=100, group=g2)
+katsayi = input.float(title="Katsayı", defval=2.0, step=0.1, group=g2)
+c1      = input.color(title="Renk       ", defval=#00bcd4, group=g2, inline="c")
+c2      = input.color(title="", defval=#00bb00, group=g2, inline="c")
+c3      = input.color(title="", defval=#bb0000, group=g2, inline="c")
+uzat    = input.bool(title="Uzat", defval=false, group=g2)
+statik  = input.bool(title="Statik Kanal", defval=true, group=g2, tooltip=t1)
+_uzat   = uzat ? extend.right : extend.none
+
+// Level Func
+f_lvl(r, c) =>
+    var line ln = na, line.delete(ln)
+    var label lb = na, label.delete(lb)
+    ln := statik ? line.new(bar_index, r, bar_index+50, r, xloc.bar_index, 
+      uzat ? extend.left : extend.none, c, line.style_dashed) : na
+    lb := statik ? label.new(bar_index+50, r, str.tostring(r, format.mintick), xloc.bar_index, yloc.price,
+      #00000000, label.style_label_left, c, size.normal, text.align_right) : na
+//
+
+// Hesaplamalar
+x = bar_index
+y = data
+_x = math.sum(x, uzunluk)
+_y = math.sum(y, uzunluk)
+_xy = math.sum(x * y, uzunluk)
+_xx = math.sum(x * x, uzunluk)
+// y = mx + b için;
+m = (uzunluk * _xy - _x * _y) / (uzunluk * _xx - _x * _x)
+b = (_y - m * _x) / uzunluk
+// Apsis
+x1 = x - uzunluk + 1
+x2 = x
+// Ordinat
+y1 = m * x1 + b
+y2 = m * x2 + b // ta.linreg(data, uzunluk, 0)
+// Sapma (Örneklem)
+varyans = 0.0
+for i = 0 to uzunluk - 1
+    varyans += math.pow(y[i] - (m * (x - i) + b), 2)
+    varyans
+sapma = math.sqrt(varyans / uzunluk) * katsayi
+// Çizim
+reg = line.new(x1, y1, x2, y2, xloc.bar_index, _uzat, c1), line.delete(reg[1])
+ust = line.new(x1, y1 + sapma, x2, y2 + sapma, xloc.bar_index, _uzat, c2), line.delete(ust[1])
+alt = line.new(x1, y1 - sapma, x2, y2 - sapma, xloc.bar_index, _uzat, c3), line.delete(alt[1])
+// Statik Seviyeler
+var float md = na
+var float up = na
+var float dn = na
+if barstate.islastconfirmedhistory
+    md := y2
+    up := y2 + sapma
+    dn := y2 - sapma
+f_lvl(md, c1)
+f_lvl(up, c2)
+f_lvl(dn, c3)
+
+plot(data, title="Data", color=color.silver)
