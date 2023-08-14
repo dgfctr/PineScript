@@ -6,7 +6,7 @@
 
 // Çoklu tarayıcı komutudur. 
 // Tanımlı alım-satım koşullarını 15 farklı sembol için tarayıp hangi koşulun kaç bar önce gerçekleştiğini derleyip sunar.
-// Kendi koşullarınızı entegre etmenize olanak sağlayan dinamik bir yapısı vardır. Aşağıdaki linkelere göz atabilirsiniz.
+// Kendi koşullarınızı entegre etmenize olanak sağlayan dinamik bir yapısı vardır. Aşağıdaki linklere göz atabilirsiniz.
 // GENEL KULLANIM : https://twitter.com/dg_factor/status/1683150600643461121?s=20
 // ENTEGRASYON 1  : https://twitter.com/dg_factor/status/1685325255919730689?s=20
 // ENTEGRASYON 2  : https://twitter.com/dg_factor/status/1685985262793302016?s=20
