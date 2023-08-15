@@ -1,6 +1,10 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // author : © dg_factor [16.06.2023, Istanbul]
 
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez.
+
+// AÇIKLAMALAR
 // Aşağıdaki komut, VAR/VIDYA hareketli ortalama türünü bir fonksiyon şeklinde sunar.
 // Tradingview'da yayınlanmış VAR (değişken ortalama) versiyonlarının hepsi grafiğin ilk barında sıfır değeri ile başlar, ilerleyen barlarda fiyata yaklaşır. 
 // Bu durum backtestlerde anlamsız sonuçlar doğurabilir. 
