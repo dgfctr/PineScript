@@ -1,8 +1,10 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // Author & Developer : dg_factor [13.08.2023]
 
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
+
 // AÇIKLAMA
-// Geliştirme amaçlıdır, alım-satım stratejisi yerine ikame edilemez.
 // Aşağıdaki komut herhangi bir data serisi üzerinde Lineer Regresyon Kanalı'nın çizimine örnek teşkil eder.
 // Lineer Regresyon, aralarında neden-sonuç ilişkisi bulunan bağımlı ve bağımsız değişkenlerden;
 // bağımsız olanlara dayalı olarak bağımlı değişkeni tahmin etmek için kullanılan bir analiz yöntemidir.
