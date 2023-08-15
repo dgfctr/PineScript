@@ -4,7 +4,9 @@
 // ║  Author & Developer : © dg_factor [18.07.2023, Istanbul]  ║
 // ╚═══════════════════════════════════════════════════════════╝
 
-// Çoklu tarayıcı komutudur. 
+// AÇIKLAMALAR
+// Geliştirme amaçlıdır, alım-satım stratejisi yerine ikame edilemez.
+// Kısaca, çoklu tarayıcı komutudur. 
 // Tanımlı alım-satım koşullarını 15 farklı sembol için tarayıp hangi koşulun kaç bar önce gerçekleştiğini derleyip sunar.
 // Kendi koşullarınızı entegre etmenize olanak sağlayan dinamik bir yapısı vardır. Aşağıdaki linklere göz atabilirsiniz.
 // GENEL KULLANIM : https://twitter.com/dg_factor/status/1683150600643461121?s=20
