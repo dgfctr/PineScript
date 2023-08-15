@@ -6,3 +6,4 @@ The use of the script does not constitute professional and/or financial advice. 
 Dosyalar özgün, birbirinden bağımsız açık kaynak kodlarını içerir. 
 Tasarım, mimari ve bazı pratik fonksiyonların etkileşimiyle ilgili eğitici bir perspektif sunma amacıyla hazırlanmıştır. 
 Herhangi bir mali/yatırım tavsiyesi içermez. Kullanımından doğacak sonuçlar sadece kullanıcının tasarrufunda ve sorumluluğundadır. [dg_factor]
+
