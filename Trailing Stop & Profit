@@ -1,9 +1,11 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // author & developer : © dg_factor [07.06.2023, Istanbul]
 
-// Aşağıdaki komut, dinamik stop-loss ve sabit profit seviyelerinin strategy() komutu üzerinde nasıl inşa edilebileceğine örnek teşkil eder.
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
 
 // TANIM : 
+// Aşağıdaki komut, dinamik stop-loss ve sabit profit seviyelerinin strategy() komutu üzerinde nasıl inşa edilebileceğine örnek teşkil eder.
 // Trailing-Stop sinyal yönünüze bağlı olarak fiyatı (aşağıdan veya yukarıdan) belli bir mesafe ile takip eden stop-loss mekanizmasıdır.
 // Fiyatın sinyal yönünün tersinde hareket etmesi halinde Trailing-Stop "ölü taklidi" yaparak yatay bir çizgi haline gelir.
 // Bu anlamıyla zararı minimize etmek üzerine kuruludur.  
