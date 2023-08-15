@@ -3,8 +3,8 @@
 // Creator: Tim Tillson (T3 Moving Average)
 // Author: @dg_factor [09.12.2021]
 
-// UYARI : 
-// Geliştirme amaçlıdır. Risk yönetimi olmaksızın alım-satım stratejisi yerine ikame edilemez.
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
 
 // AÇIKLAMALAR
 // Orijinal hasaplamalara sadık kalınarak farklı derecelerde (1-5) binom açılımları uygulandı. 
