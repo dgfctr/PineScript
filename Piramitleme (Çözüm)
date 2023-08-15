@@ -1,8 +1,10 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // author & developer : © dg_factor [06.07.2023, Istanbul]
 
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
+
 // AÇIKLAMALAR
-// Geliştirme amaçlıdır, alım-satım stratejisi yerine ikame edilemez.
 // Aşağıdaki komut, aynı yönde ardışık sinyallerin filtrelenmesine örnek teşkil eder.
 // Sistem sadece işlem yönü değiştiğinde sinyal üretir. 
 // Kendi stratejinize entegre etmek için; 
