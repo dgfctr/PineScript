@@ -1,8 +1,10 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // author & developer : © dg_factor [30.05.2023, Istanbul]
 
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
+
 // AÇIKLAMALAR
-// Geliştirme amaçlıdır, alım-satım stratejisi yerine ikame edilemez.
 // Aşağıdaki komut, statik stop ve profit seviyelerinin strategy() komutu üzerinde inşa edilmesine örnek teşkil eder.
 // Kendi stratejinize entegre etmek için alım-satım sinyallerini "long" ve "short" değişkenleriyle tanımlayın.
 // (Aşağıda örnek olarak hareketli ortalama kesişimi kullanıldı.)
