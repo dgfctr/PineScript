@@ -96,6 +96,6 @@ long_pozisyondayken_son_on_bardir_min_yuzde_iki_yukselis_kosulu = ta.barssince(l
 
 son_bes_bardir_yukselis_kosulu = math.sum(close > close[1] ? 1 : 0, 5) == 5
 son_bes_barin_herhangi_dort_tanesinde_yukselis_kosulu = math.sum(close > close[1] ? 1 : 0, 5) == 4
-son_bes_bardir_dusus_ve_ardindan_son_uc_bardir_yukselis_kosulu = math.sum(close > close[1] ? 1 : 0, 5) == 5 and math.sum(close < close[1] ? 1 : 0, 8) == 3
+son_bes_bardir_dusus_ve_ardindan_son_uc_bardir_yukselis_kosulu = math.sum(close < close[1] ? 1 : 0, 8) == 5 and math.sum(close > close[1] ? 1 : 0, 3) == 3 
 son_on_bardir_tek_barda_min_yuzde_iki_yukselis_kosulu = math.sum((close - close[1]) / close[1] * 100 >= 2 ? 1 : 0, 10) == 1
 son_uc_bardir_ellilik_ortalamanin_uzerinde_kapanis_kosulu = math.sum(close > ta.sma(close, 50) ? 1 : 0, 3) == 3 and math.sum(close > ta.sma(close, 50) ? 1 : 0, 4) == 3
