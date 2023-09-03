@@ -1,0 +1,60 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
+
+// TANIM
+// Aşağıdaki komut dosyası farklı bar kombinasyonlarından doğan sinyallerin üretilmesine örnek teşkil eder.
+// "Şu kadar bar düşüşten veya yükselişten sonra, şu kadar bar düşüş veya yükseliş olursa" koşulunu derlemek amacıyla hazırlanmıştır.
+
+// HESAPLAMA
+// math.sum(kosul ? 1 : 0, x) == x
+// Yukarıdaki yapı "herhangi bir koşul son kaç ardışık bardır gerçekleşiyor?" sorusunu cevaplar.
+// Koşul her gerçekleştiğinde fonksiyon 1 değeri üretir ve bu değerleri toplar. 
+// Eğer toplam sonuç x ise koşul son x bardır gerçekleşmiş demektir.
+
+// GELİŞTİRMELER
+// İndikatör, iki koşullu kesintisiz yükseliş veya düşüleri kombine eder. Hesaplama mantığı izlenerek koşul sayısı arttırılabilir.
+// Üretilen sinyal, giriş veya çıkış koşulu olarak kurgulanabilir.
+// Uygun değiştirmeler yapılarak giriş ve çıkış aralığı (koşulun geçerli olduğu bar aralığı) tanımlanabilir.
+// Hesaplama doğrudan sinyal olarak ele alınabileceği gibi, sinyal filtreleme için de kullanılabilir.
+
+// NOT
+// Kutular, koşulların ardışık gerçekleşmesi halinde iç-içe geçmiş biçimde görünür. Her bir kutu için max uzunluk (n1+n2)'dir.
+
+//@version=5
+indicator("BarScope", overlay=true, max_boxes_count=499)
+
+n1 = input.int(title="Bar ", defval=5, minval=0, inline="1")
+d1 = input.string(title="   Direction", options=["Up", "Down"], defval="Down", inline="1")
+
+n2 = input.int(title="Bar ", defval=3, minval=0, inline="2")
+d2 = input.string(title="   Direction", options=["Up", "Down"], defval="Up", inline="2")
+
+c1 = d1 == "Up" ? close > open : close < open
+c2 = d2 == "Up" ? close > open : close < open
+
+sonuc = 
+  d1 == d2 ? math.sum(c1 ? 1 : 0, n1 + n2) == n1 + n2 :
+  n1 == 0  ? math.sum(c2 ? 1 : 0, n2) == n2 : 
+  n2 == 0  ? math.sum(c1 ? 1 : 0, n1) == n1 : 
+  math.sum(c1 ? 1 : 0, n1 + n2) == n1 and math.sum(c2 ? 1 : 0, n2) == n2 
+//
+
+plotshape(sonuc, "sonuc", shape.xcross, location.belowbar, color=#00BCD4, size=size.small)
+
+// Table
+var t = table.new(position.top_right, 1, 2)
+s1 = d1 == "Up" ? "yükseliş" : "düşüş"
+s2 = d2 == "Up" ? "yükseliş" : "düşüş"
+if barstate.islast
+    table.cell(t, 0, 0, "")
+    table.cell(t, 0, 1, str.tostring(n1) + " bar " + s1 + " ardından " + str.tostring(n2) + " bar " + s2, text_color=#00BCD4)
+//
+
+// Box
+ust = ta.highest(n1 + n2)
+alt = ta.lowest(n1 + n2)
+gor = sonuc ? box.new(bar_index - n1 - n2 + 1, ust, bar_index, alt, xloc=xloc.bar_index, border_color= na, bgcolor=#00BCD440, border_style=line.style_solid) : na
+
