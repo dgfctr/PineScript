@@ -7,6 +7,9 @@
 // UYARI
 // Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
 
+// Tradingview linki :  
+// https://www.tradingview.com/script/6pC1ZQdd-Any-Screener-Multiple/ 
+
 // AÇIKLAMALAR
 // Kısaca, çoklu tarayıcı komutudur. 
 // Tanımlı alım-satım koşullarını 15 farklı sembol için tarayıp hangi koşulun kaç bar önce gerçekleştiğini derleyip sunar.
@@ -14,9 +17,6 @@
 // GENEL KULLANIM : https://twitter.com/dg_factor/status/1683150600643461121?s=20
 // ENTEGRASYON 1  : https://twitter.com/dg_factor/status/1685325255919730689?s=20
 // ENTEGRASYON 2  : https://twitter.com/dg_factor/status/1685985262793302016?s=20
-
-// Tradingview linki :  
-// https://www.tradingview.com/script/6pC1ZQdd-Any-Screener-Multiple/ 
 
 //@version=5
 indicator("Any Screener", overlay=true)
