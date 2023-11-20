@@ -108,3 +108,4 @@ barcolor(islem_yonu == 1 ? #00bb00 : islem_yonu == -1 ? #bb0000 : #686868)
 
 // Bitti
 plotshape(barstate.isfirst, "@ dg_factor", color=#13172200, editable=false)
+
