@@ -176,3 +176,4 @@ plotshape(barstate.isfirst, title="@ dg_factor", color=#13172200, editable=false
 //      Farklı dereceler fiyat frekansını üretebilecek yöntemlere katkı sunabilir.
 //      Hatta ortalamaya ait önceki tepe ve diplerin yeni sinyal yönü için geçerli destek/direnç seviyeleri olarak çalıştığı da oluyor.
 //      Tabi herhangi bir işe yaramayabilir de :).
+
