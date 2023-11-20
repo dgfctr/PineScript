@@ -117,3 +117,4 @@ plot(fib_1000, title="G", color=r_1000, linewidth=2, offset=-9999, trackprice=tr
 // float _min = array.min(dizi)
 // plot(_max, title="max", color=color.lime)
 // plot(_min, title="min", color=color.red)
+
