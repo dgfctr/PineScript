@@ -101,3 +101,4 @@ etiket = etiket_gor ? giris ?
 
 // Bitti
 plotshape(barstate.isfirst, "@ dg_factor", color=#13172200, editable=false)
+
