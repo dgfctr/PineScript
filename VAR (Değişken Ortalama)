@@ -32,3 +32,4 @@ f_var(data, u) =>
 //
 
 plot(f_var(kaynak, uzunluk), title="VAR")
+
