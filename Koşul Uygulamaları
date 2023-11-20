@@ -43,13 +43,15 @@ plot(b, "ortalama 2", color.orange)
 long  = a > b and a[1] <= b[1]  // ta.crossover(a, b)
 short = a < b and a[1] >= b[1]  // ta.crossunder(a, b)
 kesisim = long or short
+int yon = 0
+yon := long ? 1 : short ? -1 : nz(yon[1])
 plotshape(long, "Long ", shape.triangleup, location.belowbar, #00ff00, size=size.tiny)
 plotshape(short, "Short ", shape.triangledown, location.abovebar, #ff0000, size=size.tiny)
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Sinyal Sayısı ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 sinyal_sayisi = ta.cum(kesisim ? 1 : 0)
-renk = a > b ? #00bb00 : a < b ? #bb0000 : #686868
+renk = yon==1 ? #00bb00 : yon==-1 ? #bb0000 : #686868   // renk = a > b ? #00bb00 : a < b ? #bb0000 : #686868
 sinyal_sayisi_etiket = kesisim ? label.new(bar_index, high, str.tostring(sinyal_sayisi), color=#00000000, textcolor=renk, size=size.large) : na
 barcolor(sinyal_sayisi < 1 ? na : renk, title="Bar Renklendir", display=display.none)
 
