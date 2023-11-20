@@ -57,4 +57,3 @@ if barstate.islast
 ust = ta.highest(n1 + n2)
 alt = ta.lowest(n1 + n2)
 gor = sonuc ? box.new(bar_index - n1 - n2 + 1, ust, bar_index, alt, xloc=xloc.bar_index, border_color= na, bgcolor=#00BCD440, border_style=line.style_solid) : na
-
