@@ -45,3 +45,4 @@ plotshape(yeni_short, "tekrarlamayan short", shape.triangledown, location.top, #
 
 // Bitti
 plotshape(barstate.isfirst, title="@ dg_factor", color=#13172200, editable=false)
+
