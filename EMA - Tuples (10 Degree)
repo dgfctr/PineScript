@@ -1,0 +1,55 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// Author & Developer : dg_factor [06.11.2022]
+
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez.
+
+// TANIM
+// Aşağıdaki komut dosyası Tuple-EMA konseptini 10. dereceye kadar örneklemek için tasarlanmıştır.
+// Üssel hareketli ortalama, Pascal üçgeninin katsayılarına dayalı biçimde konfigüre edilir.
+// En sık kullanılan çıktılar arasında double EMA (DEMA) ve Triple EMA (TEMA) yer alır.
+
+// GELİŞTİRMELER
+// EMA yerine farklı ortalama türleri de kullanılabilir.
+
+//@version=5
+indicator(title='EMA - Tuples', overlay=true)
+
+data = close
+u = input.int(title="Uzunluk", defval=50)
+
+// Calcs
+r01 = ta.ema(data, u)
+r02 = ta.ema(r01, u)
+r03 = ta.ema(r02, u)
+r04 = ta.ema(r03, u)
+r05 = ta.ema(r04, u)
+r06 = ta.ema(r05, u)
+r07 = ta.ema(r06, u)
+r08 = ta.ema(r07, u)
+r09 = ta.ema(r08, u)
+r10 = ta.ema(r09, u)
+
+mono      = 1  * r01
+double    = 2  * r01 - 1  * r02
+triple    = 3  * r01 - 3  * r02 + 1   * r03
+quadruple = 4  * r01 - 6  * r02 + 4   * r03 - 1   * r04
+pentuple  = 5  * r01 - 10 * r02 + 10  * r03 - 5   * r04 + 1   * r05
+hextuple  = 6  * r01 - 15 * r02 + 20  * r03 - 15  * r04 + 6   * r05 - 1   * r06
+septuple  = 7  * r01 - 21 * r02 + 35  * r03 - 35  * r04 + 21  * r05 - 7   * r06 + 1   * r07
+octuple   = 8  * r01 - 28 * r02 + 56  * r03 - 70  * r04 + 56  * r05 - 28  * r06 + 8   * r07 - 1  * r08
+nonuple   = 9  * r01 - 36 * r02 + 84  * r03 - 126 * r04 + 126 * r05 - 84  * r06 + 36  * r07 - 9  * r08 + 1  * r09
+decuple   = 10 * r01 - 45 * r02 + 120 * r03 - 210 * r04 + 252 * r05 - 210 * r06 + 120 * r07 - 45 * r08 + 10 * r09 - 1 * r10
+
+plot(mono      , title='EMA'     , color=color.maroon)
+plot(double    , title='D-EMA'   , color=color.lime  )
+plot(triple    , title='T-EMA'   , color=color.green )
+plot(quadruple , title='Q-EMA'   , color=color.teal  )
+plot(pentuple  , title='P-EMA'   , color=color.aqua  )
+plot(hextuple  , title='H-EMA'   , color=color.blue  )
+plot(septuple  , title='S-EMA'   , color=color.navy  )
+plot(octuple   , title='O-EMA'   , color=color.yellow)
+plot(nonuple   , title='N-EMA'   , color=color.orange)
+plot(decuple   , title='DEC-EMA' , color=color.red   )
+
+plotshape(barstate.isfirst, title='dg_factor', color=#13172200, editable=false)
