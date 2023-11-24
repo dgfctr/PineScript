@@ -34,7 +34,7 @@ kontrat_sayisi          = teorik_bakiye / (giris_fiyati * (1 + komisyon_orani / 
 giris_komisyonu         = giris_fiyati * kontrat_sayisi * komisyon_orani / 100
 cikis_komisyonu         = cikis_fiyati * kontrat_sayisi * komisyon_orani / 100
 toplam_komisyon         = giris_komisyonu + cikis_komisyonu
-pozisyon_buyuklugu      = bakiye - giris_komisyonu
+pozisyon_buyuklugu      = kontrat_sayisi * giris_fiyati
 net_kar                 = 
   yon == "Løng"  ? (cikis_fiyati - giris_fiyati) * kontrat_sayisi - toplam_komisyon : 
   yon == "Shørt" ? (giris_fiyati - cikis_fiyati) * kontrat_sayisi - toplam_komisyon : na
