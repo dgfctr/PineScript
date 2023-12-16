@@ -1,0 +1,21 @@
+📢 'Backtesting Module' Tradingview'da yayınlandı!
+
+İndikatör Linki : 
+https://tr.tradingview.com/script/uLY2TQdm/
+
+Video : 
+https://www.youtube.com/watch?v=vFAlz3MgsR4
+
+Tanım :
+Bu script alım-satım sinyallerinize adapte olabilen basit ve etkili bir strategy() komutudur.
+Belirttiğiniz giriş ve çıkış inputlarına bağlı olarak backtest raporunuzu oluşturur.
+
+Ne işe yarar?
+Sadece bir sistemi test etmek için kullanılabileceği gibi, birbirinden bağımsız sinyalleri tek bir sistemde birleştirmek için de kullanılabilir! 
+Böylece karmaşık stratejilerin başarısını raporlamak mümkün hale gelir.
+
+Nasıl Çalışır?
+Test etmek istediğiniz sistemin boolean giriş ve çıkış koşullarını integer türünde tanımlayın ve modülde kaynak olarak kullanın.
+
+Geliştirmler
+Sonraki versiyonlarda filtreler ve risk yönetimi gibi uygulamalar da gelebilir. Çünkü "eat the rich!" 🍺
