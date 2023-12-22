@@ -16,8 +16,8 @@ indicator("Piramitleme (Çözüm)", overlay=true)
 
 // PROBLEM : Long ya da Short yönünde sinyalleri tekrarlanan (aynı yönde ardışık sinyal üreten) örnek bir stratejimiz olsun.
 uzunluk = input.int(20)
-ustband = ta.highest(uzunluk)
-altband = ta.lowest(uzunluk)
+ustband = ta.highest(uzunluk)[1]
+altband = ta.lowest(uzunluk)[1]
 long  = ta.crossover(close, altband)
 short = ta.crossunder(close, ustband)
 plot(ustband, "üstband", #2962ff50)
