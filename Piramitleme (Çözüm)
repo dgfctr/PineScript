@@ -18,8 +18,8 @@ indicator("Piramitleme (Çözüm)", overlay=true)
 uzunluk = input.int(20)
 ustband = ta.highest(uzunluk)[1]
 altband = ta.lowest(uzunluk)[1]
-long  = ta.crossover(close, altband)
-short = ta.crossunder(close, ustband)
+long  = ta.crossover(close, ustband)
+short = ta.crossunder(close, altband)
 plot(ustband, "üstband", #2962ff50)
 plot(altband, "altband", #ff980050)
 plotshape(long, "tekrarlayan long", shape.triangleup, location.belowbar, #00bb0070, size=size.tiny)
