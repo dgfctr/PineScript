@@ -4,6 +4,9 @@
 // UYARI
 // Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
 
+// LINK (Video)
+// https://twitter.com/dg_factor/status/1688196976779591681
+
 // TANIM
 // Aşağıdaki komut dosyası herhangi bir data serisi üzerinde auto Fibonacci seviyelerinin nasıl çizdirilebileceğine örnek teşkil eder.
 // Seviyeler, datanın belirtilen uzunluktaki en yüksek ve en düşük değerlerine göre tanımlanır. 
