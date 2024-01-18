@@ -1,0 +1,57 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+//@version=5
+indicator("Pivot Levels [MTF]", max_lines_count=500, max_labels_count=500, overlay=true)
+time_frame = input.timeframe("1D", "Time Frame")
+pvt_type = input.string("Traditional", "Pivot Türü", options=["Traditional", "Fibonacci", "Woodie", "Classic", "DM", "Camarilla"])
+lb = input.bool(true, "Etiket")
+ln = input.bool(true, "Çizim")
+tf_change = timeframe.change(time_frame)
+duration = timeframe.in_seconds(time_frame) * 1000
+pvt = ta.pivot_point_levels(pvt_type, tf_change)
+string [] ars = array.from("P", "R1", "S1", "R2", "S2", "R3", "S3", "R4", "S4", "R5", "S5")
+if tf_change
+    for i = 0 to pvt.size() - 1
+        if ln
+            line.new(time, pvt.get(i), time + duration, pvt.get(i), 
+             xloc.bar_time, extend.none, color.from_gradient(i, 0, 10, #ffaa00, #2b00ff))
+        if lb
+            label.new(time, pvt.get(i), "[" + ars.get(i) + "] " + str.tostring(pvt.get(i), format.mintick), xloc.bar_time, 
+             yloc.price, #00000000, label.style_label_right, color.from_gradient(i, 0, 10, #ffaa00, #2b00ff), size.normal, text.align_left)
+// 
+
+// Bitti :)
+
+// ╠═══════════════════════════════ Açıklamalar ═══════════════════════════════╣
+
+// UYARI
+// Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
+
+// TANIM
+// Yukarıdaki komut dosyası herhangi bir sembolde Multi Time Frame Pivot seviyelerinin nasıl çizdirilebileceğine örnek teşkil eder.
+// Pivot noktaları fiyatın destek veya dirençle karşılaşabileceği seviyeleri bulmak için kullanılan teknik bir göstergedir.
+// Seçilen timeframe'in bir önceki yüksek, düşük ve kapanış fiyatlarına dayalı olarak hesaplanır. 
+
+// ╠════════════════════════════ Alternatif Metod ═════════════════════════════╣
+
+// Aşağıdaki komut da aynı sonuçları üretir.
+// Çıktıları line.new() fonksiyonuyla istediğiniz şekilde konfigüre edebilirsiniz.
+
+// //@version=5
+// indicator("Pivot - Alternatif", overlay=true)
+// time_frame = input.timeframe("1D", "Time Frame")
+// pvt_type = input.string("Traditional", "Pivot Türü", options=["Traditional", "Fibonacci", "Woodie", "Classic", "DM", "Camarilla"])
+// ln = input.bool(true, "Çizim")
+// pvt = ta.pivot_point_levels(pvt_type, timeframe.change(time_frame))
+// // Out
+// plot(ln ? pvt.get(9) : na,  "+p5", color=#00e676)
+// plot(ln ? pvt.get(7) : na,  "+p4", color=#4caf50)
+// plot(ln ? pvt.get(5) : na,  "+p3", color=#00897b)
+// plot(ln ? pvt.get(3) : na,  "+p2", color=#4cc7fe)
+// plot(ln ? pvt.get(1) : na,  "+p1", color=#3081a5)
+// plot(ln ? pvt.get(0) : na,  "pvt", color=#194255)
+// plot(ln ? pvt.get(2) : na,  "-p1", color=#8c00ff)
+// plot(ln ? pvt.get(4) : na,  "-p2", color=#8b0c84)
+// plot(ln ? pvt.get(6) : na,  "-p3", color=#6b6c00)
+// plot(ln ? pvt.get(8) : na,  "-p4", color=#ffeb3b)
+// plot(ln ? pvt.get(10) : na, "-p5", color=#ff9800)
