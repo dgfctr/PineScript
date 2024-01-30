@@ -6,43 +6,52 @@
 
 // AÇIKLAMALAR
 // Aşağıdaki komut, aynı yönde ardışık sinyallerin filtrelenmesine örnek teşkil eder.
+// Örnek strateji close ve ATR Bandı kesişimi üzerine kuruludur. 
 // Sistem sadece işlem yönü değiştiğinde sinyal üretir. 
 // Kendi stratejinize entegre etmek için; 
-// i) Tekrarlayan sinyalleri "long" ve "short" değişkenleriyle tanımlayınız.
-// ii) "ÇÖZÜM" kısmındaki yapıyı kullanınız.
+//      i) Tekrarlayan sinyalleri "long" ve "short" değişkenleriyle tanımlayınız.
+//      ii) "ÇÖZÜM" kısmındaki yapıyı kullanınız.
 
 //@version=5
 indicator("Piramitleme (Çözüm)", overlay=true)
 
 // PROBLEM : Long ya da Short yönünde sinyalleri tekrarlanan (aynı yönde ardışık sinyal üreten) örnek bir stratejimiz olsun.
-uzunluk = input.int(20)
-ustband = ta.highest(uzunluk)[1]
-altband = ta.lowest(uzunluk)[1]
-long  = ta.crossover(close, ustband)
-short = ta.crossunder(close, altband)
-plot(ustband, "üstband", #2962ff50)
-plot(altband, "altband", #ff980050)
+u = input.int(20, "uzunluk")
+k = input.float(3.0, "katsayi")
+
+ort = ta.sma(close, u)
+ust  = ort + k * ta.atr(u)
+alt  = ort - k * ta.atr(u)
+
+long  = ta.crossover(close, alt)
+short = ta.crossunder(close, ust)
+
+plot(ort, color=#FF980050)
+plot(ust, color=#2962ff50)
+plot(alt, color=#2962ff50)
+
 plotshape(long, "tekrarlayan long", shape.triangleup, location.belowbar, #00bb0070, size=size.tiny)
 plotshape(short, "tekrarlayan short", shape.triangledown, location.abovebar, #bb000070, size=size.tiny)
 
-// ÇÖZÜM : Sinyallerin birbirine olan uzaklıklarından yararlanarak tekrarlamalarını önleyebiliriz. 
-l = ta.barssince(long) < ta.barssince(short)
-s = ta.barssince(long) > ta.barssince(short)
-yeni_long  = l and (s[1] or not l[1])
-yeni_short = s and (l[1] or not s[1])
+// ÇÖZÜM : Recursive bir yön değişkeni tanımlayarak sinyalleri üretebiliriz.
+int yon = 0
+yon := long ? 1 : short ? -1 : nz(yon[1])
+yeni_long  = yon == 1  and yon[1] != 1
+yeni_short = yon == -1 and yon[1] != -1
+
 plotshape(yeni_long, "tekrarlamayan long", shape.triangleup, location.top, #00ff00, size=size.tiny)
 plotshape(yeni_short, "tekrarlamayan short", shape.triangledown, location.top, #ff0000, size=size.tiny)
 
-// NOT 1) Karmaşık alım satım sinyalleri için farklı uygulamalar gerekebilir. 
-// NOT 2) Yukarıdaki düzenleme, grafiğin başındaki ilk sinyali algılamaz. 
-// İlk sinyali de sisteme dahil etmek istiyorsanız aşağıdaki boolean değişkenleri kullanabilirsiniz :
-// ...
-// ilk_long  = ta.cum(long  ? 1 : na) == 1
-// ilk_short = ta.cum(short ? 1 : na) == 1
-// yeni_long  = ilk_long  or l and (s[1] or not l[1])
-// yeni_short = ilk_short or s and (l[1] or not s[1]) 
-// ...
+// // Alternatif Yöntem : Sinyallerin birbirine olan uzaklıklarından yararlanarak tekrarlamalarını önleyebiliriz. 
+// l = ta.barssince(long) < ta.barssince(short)
+// s = ta.barssince(long) > ta.barssince(short)
+// i_long  = ta.cum(long  ? 1 : na) == 1
+// i_short = ta.cum(short ? 1 : na) == 1
+// yeni_long  = i_long  or l and (s[1] or not l[1])
+// yeni_short = i_short or s and (l[1] or not s[1]) 
+
+// NOT: Karmaşık alım satım sinyalleri için farklı uygulamalar gerekebilir. 
 
 // Bitti
-plotshape(barstate.isfirst, title="@ dg_factor", color=#13172200, editable=false)
+plotshape(barstate.isfirst, "@ dg_factor", shape.flag, location.bottom, #00000000, editable=false)
 
