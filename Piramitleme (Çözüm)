@@ -6,7 +6,7 @@
 
 // AÇIKLAMALAR
 // Aşağıdaki komut, aynı yönde ardışık sinyallerin filtrelenmesine örnek teşkil eder.
-// Örnek strateji close ve ATR Bandı kesişimi üzerine kuruludur. 
+// Örnek strateji close ve ATR Bandı (Keltner Channel) kesişimi üzerine kuruludur. 
 // Sistem sadece işlem yönü değiştiğinde sinyal üretir. 
 // Kendi stratejinize entegre etmek için; 
 //      i) Tekrarlayan sinyalleri "long" ve "short" değişkenleriyle tanımlayınız.
