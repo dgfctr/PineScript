@@ -29,7 +29,7 @@ if tf_change
 
 // TANIM
 // Bakınız Pivot çizimi için 200 satırlık komut kullanmanıza gerek yok 🤦‍♂ Onun yerleşik bir dizi fonksiyonu var :)
-// Yukarıdaki script herhangi bir sembolde Multi Time Frame Pivot seviyelerinin nasıl çizdirilebileceğine örnek teşkil eder.
+// Yukarıdaki script herhangi bir sembolde Multiple Time Frame Pivot seviyelerinin nasıl çizdirilebileceğine örnek teşkil eder.
 // Pivot noktaları fiyatın destek veya dirençle karşılaşabileceği seviyeleri bulmak için kullanılan teknik bir göstergedir.
 // Seçilen timeframe'in bir önceki yüksek, düşük ve kapanış fiyatlarına dayalı olarak hesaplanır. 
 
