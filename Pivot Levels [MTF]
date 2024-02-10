@@ -1,5 +1,5 @@
 // This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
-// © dg_factor
+// © dg_factor [18.01.2024]
 //@version=5
 indicator("Pivot Levels [MTF]", max_lines_count=500, max_labels_count=500, overlay=true)
 time_frame = input.timeframe("1D", "Time Frame")
