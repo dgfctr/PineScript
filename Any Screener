@@ -340,4 +340,3 @@ if barstate.islast and tb_sh
 // ╠══════════════════════════════════ Bitti ══════════════════════════════════╣
 
 plotshape(barstate.isfirst, "@ dg_factor", color=#13172200, editable=false)
-
