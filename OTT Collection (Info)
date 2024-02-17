@@ -144,7 +144,7 @@ HOTT & LOTT     : https://tradingview.com/script/5qkKOlVg
 İndikatör, Tradingview topluluk komutlarında aratıldığında çıkar. Seçerek doğrudan grafiğe yükleyebilirsiniz. 
 "System" parametresi ile istediğiniz uygulamayı seçerek görüntüleyebilirsiniz.
 Her uygulama kendi parametreleriyle tanımlıdır ve bu parametreler indikatör arayüzünde gruplandırılmıştır.
-Seçilen uygulamaya ait bileşenler grafikte otomatik olarak çizilir.
+Seçilen uygulamaya ait çıktılar grafikte otomatik olarak çizilir.
 Her uygulama farklı zamanda farklı yönde sinyaller üretir.
 İndikatör linkinde temel hesaplanma mantığı ve çalışma şekli (İngilizce) özetlenmiştir.
 Türkçe açıklamalar için referans kısmına bakınız.
