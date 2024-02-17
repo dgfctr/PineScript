@@ -14,7 +14,7 @@ Mütevazi yaklaşımı ve açık kaynaklı paylaşımlarıyla bana her zaman ilh
 ║                                               OTT COLLECTION NEDİR?                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
-OTT Collection, Tradingview'da yayınlanmış dinamik bir "birleştirme" indikatörüdür.
+OTT Collection, Tradingview'da yayınlanmış dinamik bir "birleştirme" örneğidir.
 Anıl Özekşi tarafından geliştirilen Optimized Trend Tracker indikatörünün farklı uygulamalarını tek bir komut dosyasında birleştirme fikri üzerine kuruludur.
 Aşağıdaki listede bulunan ve yine Anıl özekşi tarafından geliştirilen 11 farklı uygulamayı içerir. 
 
@@ -65,7 +65,7 @@ Pmax              [Kıvanç Özbilgiç, 2020]
 AlphaTrend        [Kıvanç Özbilgiç, 2022]     
 
 Değişen piyasa koşullarına adaptasyon iddiası, bu sistemlerin ortak temelini oluşturur.  
-Ama OTT'yi asıl olarak özel kılan şey farklı uygulama biçimlerine sahip olmasıdır. 
+Ama OTT'yi özel kılan şey farklı uygulama biçimlerine sahip olmasıdır. 
 Yukarıdaki hiçbir indikatör OTT kadar fazla sayıda uygulama türüne sahip değildir :)
 Ve bununla beraber OTT'nin uygulama türleri yukarıdaki indikatörlerin hepsi için uyarlanabilir niteliktedir.
 'OTT Collection' isminde bir koleksiyon hazırlamamın temel sebebi OTT'nin bu özelliğidir.
