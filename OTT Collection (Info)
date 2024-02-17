@@ -71,8 +71,8 @@ Ama OTT'yi özel kılan şey farklı uygulama biçimlerine sahip olmasıdır.
 Yukarıdaki hiçbir indikatör OTT kadar fazla sayıda uygulama türüne sahip değildir :)
 Ve bununla beraber OTT'nin uygulama türleri yukarıdaki indikatörlerin hepsi için uyarlanabilir niteliktedir.
 'OTT Collection' isminde bir koleksiyon hazırlamamın temel sebebi OTT'nin bu özelliğidir.
-Bunu Tradingview'da yapma sebebim ise Tradingview'un küresel ölçekte milyonlarca kullanıcıya sahip bir veri terminali olmasıdır.
-(Zaman serisi analizlerinde özgürlük alanı tanıması ve yürütme modelinin hızlı prototipleme imkanı sunması nedeniyle Pine Script tercih sebebidir.) 
+Bunu Tradingview'da yapma sebebim ise Tradingview'ın küresel ölçekte milyonlarca kullanıcıya sahip bir veri terminali olmasıdır.
+Pine Script'in zaman serisi analizlerinde tanıdığı özgürlük alanı ve yürütme modelinin hızlı prototipleme imkanı sunması da tercih sebebidir.
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║                                                    REFERANSLAR                                                    ║
