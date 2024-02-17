@@ -1,21 +1,81 @@
-© dg_factor [11.11.2023]
+© dg_factor [15.02.2024]
 
-OTT COLLECTION
-İndikatörün açık kaynak koduna aşağıdaki Tradingview linkinden ulaşabilirsiniz.
+İndikatör Linki : 
 https://www.tradingview.com/script/axJIItYE
 
-VIDEO (Indicator & Backtest)
+Videolar (İlk Versiyon Tanıtımı & Backtest) : 
 https://www.youtube.com/watch?v=NeYAbZTFOPM
 https://www.youtube.com/watch?v=vFAlz3MgsR4&t=300s
 
-AÇIKLAMA
-Bu bilgi notu "Optimized Trend Tracker (OTT)" indikatörünün farklı uygulama örnekleriyle ilgili detay vermek amacıyla oluşturulmuştur.
+Teşekkür : 
+Mütevazi yaklaşımı ve açık kaynaklı paylaşımlarıyla bana her zaman ilham kaynağı olan Anıl Hoca'ya, yayınlama talebimi kırmadığı için özel teşekkürlerimle...
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                               OTT COLLECTION NEDİR?                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+OTT Collection, Tradingview'da yayınlanmış dinamik bir "birleştirme" indikatörüdür.
+Anıl Özekşi tarafından geliştirilen Optimized Trend Tracker indikatörünün farklı uygulamalarını tek bir komut dosyasında birleştirme fikri üzerine kuruludur.
+Aşağıdaki listede bulunan ve yine Anıl özekşi tarafından geliştirilen 11 farklı uygulamayı içerir. 
+
+1)  OTT            [31.05.2019]    Optimized Trend Tracker
+2)  TOTT           [01.05.2020]    Twin Ott (Ott Bands)
+3)  OTT CHANNEL    [19.03.2021]    Ott Channel (Half Channel & Fibonacci Channel)
+4)  RISOTTO        [16.04.2021]    Rsi-Ott 
+5)  SOTT           [18.04.2021]    Stochastic-Ott
+6)  HOTT-LOTT      [06.03.2022]    Highest-Lowest Ott & Sum Version [07.04.2022] 
+7)  ROTT           [19.05.2022]    Relative Ott       
+8)  FT             [24.06.2022]    Fırsatçı Trend
+9)  RTR            [26.09.2022]    Relative True Range (Bonus Volatilite Göstergesi)
+10) MOTT           [14.02.2024]    Multiple Ott
+11) BOTTS          [14.02.2024]    Bollinger Ott Spread
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                            OTT COLLECTION NE DEĞİLDİR?                                            ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+Alım-satım stratejileri herhangi bir indikatörden çok daha fazlasıdır.
+Uygun finansal araçların seçimi, risk yönetimi, sürdürülebilirlik, güncellemeler vb uzayıp giden bir liste vardır.
+Dolayısıyla, Anıl Özekşi'nin eğitimlerinde temellendirdiği sistemlerin yukarıdaki indikatörlerden çok daha fazlası olduğunu belirtelim.
+Sistem inşası için asli kaynak Anıl Özekşi'nin EĞİTİMLERİDİR.
+OTT Collection, kullanıcıların kendi sistemlerini inşa ederken kullanacakları bileşenleri derli toplu sunma iddiasıyla hazırlandı.
+Temel işlevi alım-satım stratejilerinin doğrudan tanımlanması değil, OTT sistemleriyle ilgilenenler için bir başvuru kaynağı teşkil etmesidir. 
+Bir tür "Anıl Özekşi Kütüphanesi" olarak ele alınmalı ve buna göre değerlendirilmelidir.
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                           HANGİ AMAÇLA HAZIRLANMIŞTIR?                                            ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+Türkiye'de algoritmik trade ile ilgili devasa bir literatür ve birikim var; Yaşar Erdinç, Kıvanç Özbilgiç, Anıl Özekşi, Ali Perşembe, Cem Tutar...
+Bu isimlere bakıldığında bile 'yaşayan bir kütüphane'ye sahip olduğumuz söylenebilir.
+Sosyal medyadaki bilgi çöplüğü ve intihal bir yana bırakılırsa söz konusu birikime doğru adresten ulaşmak mümkün. 
+Şüphesiz, Anıl Özekşi bu adresler arasında en üretken ve en yaratıcı örneklerden biri. 
+Öte yandan, tarihsel gelişim seyri izlendiğinde trend takip sistemlerinin birbirine model teşkil ettiği görülüyor.
+Değişen piyasa koşullarına adaptasyon iddiası, bu sistemlerin temelini oluşturuyor. Bu gelişimde OTT önemli bir uğraktır. 
+
+Envelope Band     [?]                         
+Keltner Channel   [Chester Keltner, 1960s]    
+Donchian Channel  [Richard Donchian, 1960s]   
+Bollinger Band    [John Bollinger, 1983]      
+Trailing Reverse  [Konstantin Kopyrkin, 2001] 
+SuperTrend        [Olivier Seban, 2001]       
+Chandelier Exit   [Chuck LeBeau, 2002]        
+Most              [Anıl Özekşi, 2003]         
+Ott               [Anıl Özekşi, 2018]         
+Pmax              [Kıvanç Özbilgiç, 2020]     
+AlphaTrend        [Kıvanç Özbilgiç, 2022]     
+
+Ama OTT'yi asıl olarak özel kılan şey farklı uygulama biçimlerine sahip olmasıdır. 
+Yukarıdaki hiçbir indikatör OTT kadar fazla sayıda uygulama türüne sahip değildir :)
+Ve bununla beraber OTT'nin uygulama türleri yukarıdaki indikatörlerin hepsi için uyarlanabilir niteliktedir.
+'OTT Collection' isminde bir koleksiyon hazırlamamın temel sebebi OTT'nin bu özelliğidir.
+Bunu Tradingview'da yapma sebebim ise Tradingview'un küresel ölçekte milyonlarca kullanıcıya sahip bir veri terminali olmasıdır.  
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                    REFERANSLAR                                                    ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
 Aşağıda indikatör yaratıcısı Anıl Özekşi'ye ait Twitter/X ve Youtube referans linklerini bulabilirsiniz.
-"OTT Collection" (@ dg_factor) söz konusu uygulamaları tek bir komut dosyasında birleştiren bir indikatördür.
-Tradingview'da topluluk komut dosyaları içinde arattığınızda da ulaşabilirsiniz.
-
-
-╠════════════════════════════ Referans Linkleri ════════════════════════════╣
 
 OTT (Optimized Trend Tracker)
 https://www.youtube.com/watch?v=f4v46irHKaY
@@ -60,8 +120,7 @@ https://twitter.com/Anil_Ozeksi/status/1553622261759868928
 RTR (Relative True Range)
 https://twitter.com/Anil_Ozeksi/status/1574432868457029634
 
-╠══════════════════════════════════ Bonus ══════════════════════════════════╣
-
+BONUS LINKLER
 3K              🙂  : https://twitter.com/Anil_Ozeksi/status/1493614901159415817
 3G              🔨  : https://twitter.com/Anil_Ozeksi/status/1494016391980236807
 Crypto          🍺  : https://twitter.com/Anil_Ozeksi/status/1667435982184914946
@@ -69,12 +128,24 @@ TOTTO           🚫  : https://twitter.com/Anil_Ozeksi/status/15134969664157163
 TOTTO (error)   🤦‍♂️  : https://twitter.com/Anil_Ozeksi/status/1513598693320052743
 OTTO            🚫  : https://twitter.com/Anil_Ozeksi/status/1500448581777559556
 
-// ╠═════════════════ Kıvanç Özbilgiç'in Yayınladığı Örnekler ═════════════════╣
-
+Kıvanç Özbilgiç'in Tradingview'da Yayınladığı Örnekler
 VAR             : https://tradingview.com/script/64ynXU2e
 OTT             : https://tradingview.com/script/zVhoDQME
 TOTT            : https://tradingview.com/script/eENf7NpJ
 OTT Channels    : https://tradingview.com/script/jD7ioJ1Y
 SOTT            : https://tradingview.com/script/BK45kYNB
 HOTT & LOTT     : https://tradingview.com/script/5qkKOlVg
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                 NASIL KULLANILIR?                                                 ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+İndikatör, Tradingview topluluk komutlarında aratıldığında çıkar. Seçerek doğrudan grafiğe yükleyebilirsiniz. 
+"System" parametresi ile istediğiniz uygulamayı seçerek görüntüleyebilirsiniz.
+Her uygulama kendi parametreleriyle tanımlıdır ve bu parametreler indikatör arayüzünde gruplandırılmıştır.
+Seçilen uygulamaya ait bileşenler grafikte otomatik olarak çizilir.
+Her uygulama farklı zamanda farklı yönde sinyaller üretir.
+İndikatör linkinde temel hesaplanma mantığı ve çalışma şekli (İngilizce) özetlenmiştir.
+Türkçe açıklamalar için referans kısmına bakınız.
 
