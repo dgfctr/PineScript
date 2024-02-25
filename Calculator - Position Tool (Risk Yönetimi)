@@ -1,0 +1,18 @@
+© dg_factor [25.02.2024]
+
+Position Tool indikatörü risk yönetimi, auto kaldıraç ve hata denetimini gerçekleştiren gelişkin bir uygulamadır.
+
+NELER YAPABİLİR?
+✔ Klasik R sistemi üzerine kurulu risk yönetimini modeller.
+✔ İşleme gireceğiniz tutarı (marjin) hesaplar.
+✔ Kaldıracı otomatik olarak (beş farklı seviye tercihiyle birlikte) hesaplar.
+✔ Manuel olarak kaldıraç seviyenizi kendiniz de belirleyebilirsiniz.
+✔ İşlem masraflarınızı (komisyon) hesaplar.
+✔ Kâr ve zarar senaryolarının bakiyenize olan etkisini (komisyonu da dahil ederek) hesaplar.
+✔ Hata denetimi yapabilir! Risk yönetiminde üç temel hata türü vardır; Marjin hatası, Maksimum Zarar hatası ve Likidasyon hatası. Bu hatalar kullanıcı kaynaklı yanlış parametre kombinasyonlarından doğar. İndikatör mevcut hataları tespit eder ve nasıl giderebileceğinizi (alternatif çözümleri listeleyerek) raporlar. Hatalar tamamen giderilene kadar sizi yönlendirir.
+✔ Total kârlılık için gereken minimum başarılı işlem yüzdesini hesaplar.
+✔ Ve bütün bunları bir tablo halinde size sunar!
+✔ Bonus : Mevcut pozisyonu isteğe bağlı olarak grafikte çizdirebilirsiniz. Fiyat ve tarih seviyelerini grafik üzerindeki çizgileri kaydırarak kolayca değiştirebilirsiniz.
+
+İndikatör Linki : 
+https://tr.tradingview.com/script/lodugQu6/
