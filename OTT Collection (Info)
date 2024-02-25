@@ -1,8 +1,8 @@
 © dg_factor [15.02.2024]
 
-// ╔═════════════════════════════════════════════╗
-// ║                    GİRİŞ                    ║
-// ╚═════════════════════════════════════════════╝
+╔═════════════════════════════════════════════╗
+║                    GİRİŞ                    ║
+╚═════════════════════════════════════════════╝
 
 İndikatör Linki : 
 https://www.tradingview.com/script/axJIItYE
@@ -16,12 +16,14 @@ https://www.youtube.com/watch?v=vFAlz3MgsR4&t=300s
 Teşekkür : 
 Mütevazi yaklaşımı ve açık kaynaklı paylaşımlarıyla bana her zaman ilham kaynağı olan Anıl Hoca'ya, yayınlama talebimi kırmadığı için özel teşekkürlerimle...
 
-// ╔═════════════════════════════════════════════╗
-// ║            OTT COLLECTION NEDİR?            ║
-// ╚═════════════════════════════════════════════╝
+╔═════════════════════════════════════════════╗
+║            OTT COLLECTION NEDİR?            ║
+╚═════════════════════════════════════════════╝
 
 OTT Collection, Tradingview'da yayınlanmış dinamik bir "indikatör birleştirme" örneğidir.
 Anıl Özekşi tarafından geliştirilen Optimized Trend Tracker indikatörünün farklı uygulamalarını tek bir komut dosyasında modelleme fikri üzerine kuruludur.
+
+╠════════════ Anıl Özekşi Library ════════════╣
 
 1)  OTT            [31.05.2019]    Optimized Trend Tracker
 2)  TOTT           [01.05.2020]    Twin Ott (Ott Bands)
@@ -35,9 +37,9 @@ Anıl Özekşi tarafından geliştirilen Optimized Trend Tracker indikatörünü
 10) MOTT           [14.02.2024]    Multiple Ott
 11) BOOTS          [14.02.2024]    Bollinger Ott Spread
 
-// ╔═════════════════════════════════════════════╗
-// ║        OTT COLLECTION NE DEĞİLDİR?          ║
-// ╚═════════════════════════════════════════════╝
+╔═════════════════════════════════════════════╗
+║        OTT COLLECTION NE DEĞİLDİR?          ║
+╚═════════════════════════════════════════════╝
 
 Yukarıdaki indikatörler bir alım-satım stratejisinin parçası olabilirler, ama stratejinin kendisi yerine ikame edilemezler.
 Sistem inşası için Anıl Özekşi'nin yayınladığı EĞİTİMLER belirleyici tek kaynaktır.
@@ -47,9 +49,9 @@ Koleksiyon bu sorunu köklü biçimde çözme iddiası taşır.
 Bununla beraber, OTT uygulamalarının birbiriyle etkileşimi ayrı bir çalışmanın konusudur. 
 Eğer fırsat bulursam parametrik filtre mekanizmalarına dayanan "Progressive Algo-Trade System" başlıklı bir komut yayınlamayı da düşünüyorum.
 
-// ╔═════════════════════════════════════════════╗
-// ║     NEDEN OTT? BAŞKA İNDİKATÖR MÜ YOK?      ║
-// ╚═════════════════════════════════════════════╝
+╔═════════════════════════════════════════════╗
+║     NEDEN OTT? BAŞKA İNDİKATÖR MÜ YOK?      ║
+╚═════════════════════════════════════════════╝
 
 Türkiye'de finansal algoritmalar ile ilgili devasa bir literatür ve birikim var; Yaşar Erdinç, Kıvanç Özbilgiç, Anıl Özekşi, Ali Perşembe, Cem Tutar...
 Bu isimlere bakıldığında bile 'yaşayan bir kütüphane'ye sahip olduğumuz söylenebilir.
@@ -77,9 +79,9 @@ Daha da önemlisi, OTT'nin uygulama türleri yukarıdaki indikatörlerin hepsi i
 'OTT Collection' isminde bir koleksiyon hazırlamamın temel sebebi OTT'nin bu benzersiz özelliğidir.
 Umarım herkese fayda sağlar...
 
-// ╔═════════════════════════════════════════════╗
-// ║            KAYNAK & REFERANSLAR             ║
-// ╚═════════════════════════════════════════════╝
+╔═════════════════════════════════════════════╗
+║            KAYNAK & REFERANSLAR             ║
+╚═════════════════════════════════════════════╝
 
 Aşağıda indikatör yaratıcısı Anıl Özekşi'ye ait Twitter/X ve Youtube referans linklerini bulabilirsiniz.
 
