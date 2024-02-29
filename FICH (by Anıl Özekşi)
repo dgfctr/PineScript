@@ -6,6 +6,7 @@
 
 // FICH, trend yönünden bağımsız olarak;
 // Belli bir uzunluktaki en yüksek ve en düşük fiyatlar arasında fibonacci katsayılarına dayanan kaydırılmış (ötelenmiş) seviyelerden oluşuyor. 
+
 // Sinyallerle ilgili şimdilik herhangi bir detay yok ama Anıl Hoca paylaşırsa kaynak kodunu güncellerim.
 // İlgilenenler için Pine Script versiyonu aşağıda...
 
