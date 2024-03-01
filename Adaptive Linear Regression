@@ -5,7 +5,7 @@
 // Geliştirme amaçlıdır, doğrudan alım-satım stratejisi yerine ikame edilemez. 
 
 // LINK (video)
-https://twitter.com/dg_factor/status/1690796984964091905
+// https://twitter.com/dg_factor/status/1690796984964091905
 
 // AÇIKLAMA
 // Aşağıdaki komut herhangi bir data serisi üzerinde Lineer Regresyon Kanalı'nın çizimine örnek teşkil eder.
@@ -32,11 +32,12 @@ t1 =
 g2 = "KONFİGÜRASYON"
 uzunluk = input.int(title="Uzunluk", defval=100, group=g2)
 katsayi = input.float(title="Katsayı", defval=2.0, step=0.1, group=g2)
-c1      = input.color(title="Renk       ", defval=#00bcd4, group=g2, inline="c")
+c1      = input.color(title="Renk       ", defval=#00bcd4, group=g2, inline="c")
 c2      = input.color(title="", defval=#00bb00, group=g2, inline="c")
 c3      = input.color(title="", defval=#bb0000, group=g2, inline="c")
 uzat    = input.bool(title="Uzat", defval=false, group=g2)
 statik  = input.bool(title="Statik Kanal", defval=true, group=g2, tooltip=t1)
+cizim   = input.bool(title="Plot ", defval=true, group=g2)
 _uzat   = uzat ? extend.right : extend.none
 
 // Level Func
@@ -88,4 +89,7 @@ f_lvl(up, c2)
 f_lvl(dn, c3)
 
 plot(data, title="Data", color=color.silver)
+plot(not cizim ? na : y2 + sapma, "up", c2)
+plot(not cizim ? na : y2, "mid",  c1)
+plot(not cizim ? na : y2 - sapma, "down", c3)
 
