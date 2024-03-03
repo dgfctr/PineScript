@@ -37,7 +37,7 @@ c2      = input.color(title="", defval=#00bb00, group=g2, inline="c")
 c3      = input.color(title="", defval=#bb0000, group=g2, inline="c")
 uzat    = input.bool(title="Uzat", defval=false, group=g2)
 statik  = input.bool(title="Statik Kanal", defval=true, group=g2, tooltip=t1)
-cizim   = input.bool(title="Plot ", defval=true, group=g2)
+cizim   = input.bool(title="Plot ", defval=false, group=g2)
 _uzat   = uzat ? extend.right : extend.none
 
 // Level Func
