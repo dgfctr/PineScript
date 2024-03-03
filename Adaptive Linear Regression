@@ -10,9 +10,9 @@
 // AÇIKLAMA
 // Aşağıdaki komut herhangi bir data serisi üzerinde Lineer Regresyon Kanalı'nın çizimine örnek teşkil eder.
 // Lineer Regresyon, aralarında neden-sonuç ilişkisi bulunan bağımlı ve bağımsız değişkenlerden;
-// bağımsız olanlara dayalı olarak bağımlı değişkeni tahmin etmek için kullanılan bir analiz yöntemidir.
+// bağımsız olanlara syxalı olarak bağımlı değişkeni tahmin etmek için kullanılan bir analiz yöntemidir.
 // Bir sebebe bağlı olarak ileriye yönelik tahmin amaçlar.
-// Regresyon Kanalı direnç ve destek seviyelerinin belirlenmesi amacıyla; (örneklem) sapma değeri ve onun katlarına dayalı olarak hesaplanır.
+// Regresyon Kanalı direnç ve destek seviyelerinin belirlenmesi amacıyla; (örneklem) sapma değeri ve onun katlarına syxalı olarak hesaplanır.
 
 // UYARI (REPAINT)
 // Repaint kısaca, bir datanın geçmiş değerlerinin sonraki barlarda değişmesi olarak tanımlanabilir.
@@ -25,19 +25,20 @@ indicator("Adaptive Linear Regression")
 g1 = "KAYNAK GİRİNİZ"
 data    = input(title="Data", defval=close, group=g1)
 
-t1 =  
-  "İndikatörün çalıştırıldığı an itibariyle oluşmuş seviyeleri çizer. " +  
-  "(Belirtilen uzunluktaki kapanmış olan son bara göre çizim yapılır, açık olan bar hesaplamaya dahil değildir). " + 
-  "İndikatör ayarlarında herhangi bir değişiklik gerçekleştirdiğinizde Statik Kanal seviyeleri de güncellenecektir."
+t1 = "Dinamik kanal sürekli güncellenir ve repaint yapar."
+t2 = "Statik kanal repaint yapmaz. İndikatörün çalıştırıldığı an itibariyle oluşmuş seviyeleri çizer ve asla değişmez. " + 
+ "(Açık olan bar hesaplamaya dahil değildir)."
+t3 = "Plot çizimi repaint yapmaz, en güvenilir sonucu gösterir."
 g2 = "KONFİGÜRASYON"
 uzunluk = input.int(title="Uzunluk", defval=100, group=g2)
 katsayi = input.float(title="Katsayı", defval=2.0, step=0.1, group=g2)
 c1      = input.color(title="Renk       ", defval=#00bcd4, group=g2, inline="c")
 c2      = input.color(title="", defval=#00bb00, group=g2, inline="c")
 c3      = input.color(title="", defval=#fb0000, group=g2, inline="c")
+dinamik = input.bool(title="Dinamik Kanal", defval=true, group=g2, tooltip=t1)
+statik  = input.bool(title="Statik Kanal", defval=true, group=g2, tooltip=t2)
+cizim   = input.bool(title="Plot ", defval=false, group=g2, tooltip=t3)
 uzat    = input.bool(title="Uzat", defval=false, group=g2)
-statik  = input.bool(title="Statik Kanal", defval=true, group=g2, tooltip=t1)
-cizim   = input.bool(title="Plot ", defval=false, group=g2)
 _uzat   = uzat ? extend.right : extend.none
 
 // Level Func
@@ -45,9 +46,9 @@ f_lvl(r, c) =>
     var line ln = na, line.delete(ln)
     var label lb = na, label.delete(lb)
     ln := statik ? line.new(bar_index, r, bar_index+50, r, xloc.bar_index, 
-      uzat ? extend.left : extend.none, c, line.style_dashed) : na
+     uzat ? extend.left : extend.none, c, line.style_dashed) : na
     lb := statik ? label.new(bar_index+50, r, str.tostring(r, format.mintick), xloc.bar_index, yloc.price,
-      #00000000, label.style_label_left, c, size.normal, text.align_right) : na
+     #00000000, label.style_label_left, c, size.normal, text.align_right) : na
 //
 
 // Hesaplamalar
@@ -60,6 +61,8 @@ _xx = math.sum(x * x, uzunluk)
 // y = mx + b için;
 m = (uzunluk * _xy - _x * _y) / (uzunluk * _xx - _x * _x)
 b = (_y - m * _x) / uzunluk
+r = ta.correlation(x, y, uzunluk)
+dt = math.pow(r, 2) * 100
 // Apsis
 x1 = x - uzunluk + 1
 x2 = x
@@ -73,9 +76,9 @@ for i = 0 to uzunluk - 1
     varyans
 sapma = math.sqrt(varyans / uzunluk) * katsayi
 // Çizim
-reg = line.new(x1, y1, x2, y2, xloc.bar_index, _uzat, c1), line.delete(reg[1])
-ust = line.new(x1, y1 + sapma, x2, y2 + sapma, xloc.bar_index, _uzat, c2), line.delete(ust[1])
-alt = line.new(x1, y1 - sapma, x2, y2 - sapma, xloc.bar_index, _uzat, c3), line.delete(alt[1])
+reg = dinamik ? line.new(x1, y1, x2, y2, xloc.bar_index, _uzat, c1) : na, line.delete(reg[1])
+ust = dinamik ? line.new(x1, y1 + sapma, x2, y2 + sapma, xloc.bar_index, _uzat, c2) : na, line.delete(ust[1])
+alt = dinamik ? line.new(x1, y1 - sapma, x2, y2 - sapma, xloc.bar_index, _uzat, c3) : na, line.delete(alt[1])
 // Statik Seviyeler
 var float md = na
 var float up = na
@@ -92,4 +95,5 @@ plot(data, title="Data", color=color.silver)
 plot(not cizim ? na : y2 + sapma, "up", c2)
 plot(not cizim ? na : y2, "mid",  c1)
 plot(not cizim ? na : y2 - sapma, "down", c3)
-
+plot(r, "Pearson r", precision=2, display=display.data_window)
+plot(dt, "Determination %", precision=2, display=display.data_window)
