@@ -29,8 +29,11 @@ showsignalsk  = input(title='Show Signals ', defval=true, group='ALPHATREND')
 ATR = ta.sma(ta.tr, AP)
 upT = low - ATR * coeff
 downT = high + ATR * coeff
+rsi = ta.rsi(src, AP)
+mfi = ta.mfi(hlc3, AP)
+filter = novolumedata ? rsi >= 50 : mfi >= 50
 AlphaTrend = 0.0
-AlphaTrend := (novolumedata ? ta.rsi(src, AP) >= 50 : ta.mfi(hlc3, AP) >= 50) ? upT < nz(AlphaTrend[1]) ? nz(AlphaTrend[1]) : upT : downT > nz(AlphaTrend[1]) ? nz(AlphaTrend[1]) : downT
+AlphaTrend := filter ? upT < nz(AlphaTrend[1]) ? nz(AlphaTrend[1]) : upT : downT > nz(AlphaTrend[1]) ? nz(AlphaTrend[1]) : downT
 color1 = AlphaTrend > AlphaTrend[2] ? #00E60F : AlphaTrend < AlphaTrend[2] ? #80000B : AlphaTrend[1] > AlphaTrend[3] ? #00E60F : #80000B
 buySignalk = ta.crossover(AlphaTrend, AlphaTrend[2])
 sellSignalk = ta.crossunder(AlphaTrend, AlphaTrend[2])
