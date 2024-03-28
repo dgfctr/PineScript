@@ -12,28 +12,18 @@
 //@version=5
 indicator("FICH", overlay=true)
 
-length = input.int(2000, "Length")
-
-f_high = ta.highest(length)
-f_low  = ta.lowest(length)
+fich_u = input.int(2000, "Length")
+f_high = ta.highest(fich_u)
+f_low  = ta.lowest(fich_u)
 f_diff = f_high - f_low
+fich(x) => (f_low + f_diff * x)[30]
 
-f_1000 = f_high[30]
-f_0854 = (f_low + f_diff * 0.854)[30]
-f_0764 = (f_low + f_diff * 0.764)[30]
-f_0618 = (f_low + f_diff * 0.618)[30]
-f_0500 = (f_low + f_diff * 0.500)[30]
-f_0382 = (f_low + f_diff * 0.382)[30]
-f_0236 = (f_low + f_diff * 0.236)[30]
-f_0146 = (f_low + f_diff * 0.146)[30]
-f_0000 = f_low[30]
-
-plot(f_1000, color=#00bb00, title="[FICH] High")
-plot(f_0854, color=#8c00ff, title="[FICH] 0.854") 
-plot(f_0764, color=#00bcd4, title="[FICH] 0.764")
-plot(f_0618, color=#1848cc, title="[FICH] 0.618")
-plot(f_0500, color=#787B86, title="[FICH] Mid")
-plot(f_0382, color=#945100, title="[FICH] 0.382")
-plot(f_0236, color=#ff9800, title="[FICH] 0.236")
-plot(f_0146, color=#a4a600, title="[FICH] 0.146")
-plot(f_0000, color=#fb0000, title="[FICH] Low")
+plot(fich(1.000), "[FICH] High",  #00bb00)
+plot(fich(0.854), "[FICH] 0.854", #8c00ff)
+plot(fich(0.764), "[FICH] 0.764", #00bcd4)
+plot(fich(0.618), "[FICH] 0.618", #1848cc)
+plot(fich(0.500), "[FICH] Mid",   #787B86)
+plot(fich(0.382), "[FICH] 0.382", #945100)
+plot(fich(0.236), "[FICH] 0.236", #ff9800)
+plot(fich(0.146), "[FICH] 0.146", #a4a600)
+plot(fich(0.000), "[FICH] Low",   #fb0000)
