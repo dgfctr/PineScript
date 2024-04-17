@@ -10,6 +10,14 @@
 // Bu durum backtestlerde anlamsız sonuçlar doğurabilir. 
 // Sorunsuz versiyonu aşağıda 🧐
 
+// NOT
+// VAR/VIDYA Tushar S. Chande'nin 1994'te 'The New Technical Trader' kitabında yayınladığı üssel bir hareketli ortalama türüdür. 
+// Veri terminallerinde yaygın olarak kullanılır, aşağıda basit bir düzenleme yaptım sadece. 
+// İleri okuma : 
+// https://adaptrade.com/Newsletter/NL-AdaptIndicators.htm 
+// Bonus :  
+// https://twitter.com/dg_factor/status/1655957870276657153
+
 //@version=5
 indicator("VAR (Değişken Ortalama)", overlay=true)
 
