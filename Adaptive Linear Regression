@@ -10,9 +10,9 @@
 // AÇIKLAMA
 // Aşağıdaki komut herhangi bir data serisi üzerinde Lineer Regresyon Kanalı'nın çizimine örnek teşkil eder.
 // Lineer Regresyon, aralarında neden-sonuç ilişkisi bulunan bağımlı ve bağımsız değişkenlerden;
-// bağımsız olanlara syxalı olarak bağımlı değişkeni tahmin etmek için kullanılan bir analiz yöntemidir.
+// bağımsız olanlara dayalı olarak bağımlı değişkeni tahmin etmek için kullanılan bir analiz yöntemidir.
 // Bir sebebe bağlı olarak ileriye yönelik tahmin amaçlar.
-// Regresyon Kanalı direnç ve destek seviyelerinin belirlenmesi amacıyla; (örneklem) sapma değeri ve onun katlarına syxalı olarak hesaplanır.
+// Regresyon Kanalı direnç ve destek seviyelerinin belirlenmesi amacıyla; (örneklem) sapma değeri ve onun katlarına dayalı olarak hesaplanır.
 
 // UYARI (REPAINT)
 // Repaint kısaca, bir datanın geçmiş değerlerinin sonraki barlarda değişmesi olarak tanımlanabilir.
