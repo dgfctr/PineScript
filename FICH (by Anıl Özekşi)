@@ -1,29 +1,74 @@
 // This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
-// © dg_factor [29.02.2024]
+// © dg_factor 
 
-// Dün yeni bir Anıl Özekşi indikatörüyle daha tanıştık :)
-// FICH (Fibonacci Channels) indikatörü, trend temelli klasik fibonacci heasplamalarına daha sade ve anlaşılır bir yaklaşım getiriyor.
-
+// [29.02.2024]
+// Dün yeni bir Anıl Özekşi indikatörüyle daha tanıştık.
+// FICH (Fibonacci Channels) indikatörü, trend temelli klasik fibonacci heasplamalarına kıyasla daha sade ve anlaşılır bir yaklaşım getiriyor.
 // FICH, trend yönünden bağımsız olarak;
 // belli bir uzunluktaki en yüksek ve en düşük fiyatlar arasında fibonacci katsayılarına dayanan kaydırılmış (ötelenmiş) seviyelerden oluşuyor. 
 
-// Sinyallerle ilgili şimdilik herhangi bir detay yok ama Anıl Hoca paylaşırsa kaynak kodunu güncellerim.
+// [13.07.2024] 
+// Güncelleme : 
+// Sinyaller için Değişken ortalama ve koşul bloğu eklendi. 
+// Sinyal yönü barcolor fonksiyonuyla görselleştirildi. 
+// Çizimler kullanıcı tercihine sunuldu.
 
 //@version=5
 indicator("FICH", overlay=true)
 
-fich_u = input.int(2000, "Length")
-f_high = ta.highest(fich_u)
-f_low  = ta.lowest(fich_u)
-f_diff = f_high - f_low
-fich(x) => (f_low + f_diff * x)[30]
+sup_u  = input.int(30, "Support Length ", step=5, tooltip="opt1 : [10, 30]")
+fich_u = input.int(2000, "Length ", step=250, tooltip="opt2 : [1000, 2000]")
+fich_r = input.int(50, "Referance ", tooltip="[30, 50]")
+sh_pl  = input.bool(true, "Plots ")
+sh_bc  = input.bool(true, "Barcolor ")
 
-plot(fich(1.000), "[FICH] High",  #00bb00)
-plot(fich(0.854), "[FICH] 0.854", #8c00ff)
-plot(fich(0.764), "[FICH] 0.764", #00bcd4)
-plot(fich(0.618), "[FICH] 0.618", #1848cc)
-plot(fich(0.500), "[FICH] Mid",   #787B86)
-plot(fich(0.382), "[FICH] 0.382", #945100)
-plot(fich(0.236), "[FICH] 0.236", #ff9800)
-plot(fich(0.146), "[FICH] 0.146", #a4a600)
-plot(fich(0.000), "[FICH] Low",   #fb0000)
+// Variable Index Dynamic Adaptive Moving Average - Tushar Chande
+f_var(data, length) =>
+    a = ta.sma(data, length)
+    b = math.abs(ta.change(data, 9))
+    c = math.sum(math.abs(ta.change(data)), 9)
+    d = c != 0 ? b / c : 0
+    e = 2 / (length + 1)
+    r = 0.0, r := length == 1 ? data : na(r[1]) ? a : d * e * (data - nz(r[1])) + nz(r[1])
+//
+
+// Fibonacci Channels - Anıl özekşi
+f_fich(x) =>
+    a = ta.highest(fich_u)
+    b = ta.lowest(fich_u)
+    r = (a * x + b * (1 - x)) [fich_r]
+//
+
+support = f_var(close, sup_u), plot(sh_pl ? support : na, "Support", #8c00ff)
+f_1000  = f_fich(1.000), plot(sh_pl ? f_1000 : na, "[FICH] High",  #00bcd450)
+f_0854  = f_fich(0.854), plot(sh_pl ? f_0854 : na, "[FICH] 0.854", #00bcd4)
+f_0764  = f_fich(0.764), plot(sh_pl ? f_0764 : na, "[FICH] 0.764", #00bcd4)
+f_0618  = f_fich(0.618), plot(sh_pl ? f_0618 : na, "[FICH] 0.618", #00bcd4)
+f_0500  = f_fich(0.500), plot(sh_pl ? f_0500 : na, "[FICH] 0.500", #787B86)
+f_0382  = f_fich(0.382), plot(sh_pl ? f_0382 : na, "[FICH] 0.382", #ff9800)
+f_0236  = f_fich(0.236), plot(sh_pl ? f_0236 : na, "[FICH] 0.236", #ff9800)
+f_0146  = f_fich(0.146), plot(sh_pl ? f_0146 : na, "[FICH] 0.146", #ff9800)
+f_0000  = f_fich(0.000), plot(sh_pl ? f_0000 : na, "[FICH] Low",   #ff980050)
+
+long = 
+ ta.crossover(support, f_0854) or
+ ta.crossover(support, f_0764) or
+ ta.crossover(support, f_0618) or
+ ta.crossover(support, f_0500) or
+ ta.crossover(support, f_0382) or
+ ta.crossover(support, f_0236) or
+ ta.crossover(support, f_0146)
+//
+
+short = 
+ ta.crossunder(support, f_0854) or
+ ta.crossunder(support, f_0764) or
+ ta.crossunder(support, f_0618) or
+ ta.crossunder(support, f_0500) or
+ ta.crossunder(support, f_0382) or
+ ta.crossunder(support, f_0236) or
+ ta.crossunder(support, f_0146)
+//
+
+int dir = 0, dir := long ? 1 : short ? -1 : nz(dir[1])
+barcolor(sh_bc ? dir == 1 ? #00bb00 : dir == -1 ? #bb0000 : #333333 : na)
