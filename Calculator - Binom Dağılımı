@@ -1,0 +1,89 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor [19.07.2024]
+
+// AÇIKLAMA 
+//      Diyelim ki iyi getiri sağladığını düşündüğünüz bir alım-satım sisteminiz var.
+//      Backtesti yaptınız ve sisteminizin başarısını ölçebilen bir metrik elde ettiniz. 
+//      Örneğin bu metrik WinRate olsun. (Başarı Yüzdesi : Başarılı işlem sayısının toplam işlem sayısına oranıdır.)
+//      Bu strateji ile 100 tane işleme girmeyi düşünüyorsunuz.
+//      Bu 100 işlemden N tanesindeki minimum ve maksimum başarı olasılığını işlemlere başlamadan önce nasıl hesaplayacaksınız? 
+//      Bu indikatör yukarıdaki soruya cevap verme arayışıyla hazırlanan basit bir hesap makinesidir.
+
+// NOT
+//      Stratejinizin genel başarısını farklı metriklerle de ölçebilirsiniz, WinRate sık kullanılan bir argüman olduğu için seçildi.
+//      Farklı metrikler seçerken 0-100 arasında bir değer almasına dikkat ediniz.
+
+// KAVRAMLAR
+//      Bernoulli Deneyi: 
+//          Tek bir denemede sadece iki olası sonucu olan bir olayın gerçekleşmesini ifade eden deney türüdür.
+//          (Herhangi bir işlem ya başarıyla sonuçlanır ya da başarısız olur. Yüzdesel Win Rate bir backtest çıktısıdır.)
+//      Binom Dağılımı:
+//          Bernoulli deneyinin belirli bir sayıda (n defa) tekrarlanması durumunda, başarılı sonuç sayısının olasılık dağılımını gösterir.
+//          (Yeni bir işlem serisinin başlatılması halinde Win Rate'in bu işlem serisindeki olasılık dağılımını hesaplamak için kullanılır.)
+//      Kümülatif Binom Dağılımı: 
+//          Binom dağılımının birikimli halidir. 
+//          Bu dağılım, belirli bir sayıda denemede, başarı sayısının belirli bir değere eşit veya küçük (en fazla) ya da eşit veya büyük (en az) olma olasılığını hesaplamak için kullanılır.
+//          (Bu yöntem, işlem serisindeki olasılık dağılımını minimum ve maksimum değerleri içerecek şekilde hesaplamak için kullanılır.)
+
+//@version=5
+indicator("Calculator - Binom Dağılımı", overlay=true)
+
+// Factorial
+f_factorial(n) =>
+    r = 1
+    for i = 1 to n
+        r := n == 0 ? 1 : r * i
+        r
+//
+
+// Combination
+f_combination(n, x) => 
+    f_factorial(n) / (f_factorial(x) * f_factorial(n - x))
+//
+
+// Binomial Distrubition
+f_binom(p, n, k) => 
+    f_combination(n, k) * math.pow(p, k) * math.pow(1 - p, n - k)
+//
+
+tt_p = "Stratejinin backtestinde elde edilen ve başarı olasılığını tanımlayan yüzdesel değerdir. 0-100 arasında değer alabilen herhangi bir metrik kullanılabilir. Örneğin WinRate (Başarılı işlem sayısının toplam işlem sayısına oranıdır)."
+tt_n = "Bu strateji ile gelecekte gerçekleştirilmesi planlanan toplam işlem sayısıdır."
+tt_k = "Olasılık sonucunun hesaplanacağı (gerçekleştirilmesi hedeflenen) başarılı işlem sayısıdır."
+p = input.float(37.5, "Başarı Oranı %", tooltip=tt_p) / 100.
+n = input.int(100, "Toplam İşlem Sayısı", maxval=100, tooltip=tt_n)
+k = input.int(40, "Hedef İşlem Sayısı", maxval=100, tooltip=tt_k)
+
+// ╠══════════════════════════ Başarı Hesaplamaları ═══════════════════════════╣
+
+// Başarı Olasılığı
+basarili = f_binom(p, n, k)
+min_basarili = 0.0
+max_basarili = 0.0
+for i = 0 to k - 1
+    min_basarili += f_binom(p, n, i)
+min_basarili := 1 - min_basarili
+for i = 0 to k
+    max_basarili += f_binom(p, n, i)
+// standart_sapma  = math.sqrt(n * p * q)    // Ortalama başarıdan sapmayı ifade eder. Varyansın kareköküdür.
+
+// Text
+_k       = str.tostring(k)
+rate     = "Başarı oranı " + "%" + str.tostring(p * 100) + " olan bir stratejinin, " 
+go       = "gerçekleştireceği " + str.tostring(n) + " işlemden;"
+win      = " ✔ " + _k + " tanesinde başarılı olma olasılığı : %" +  str.tostring(basarili * 100, "#.######")
+min_win  = " ✔ " + "En az " + _k + " tanesinde başarılı olma olasılığı : %" +  str.tostring(min_basarili * 100, "#.######")
+max_win  = " ✔ " + "En fazla " + _k + " tanesinde başarılı olma olasılığı : %" +  str.tostring(max_basarili * 100, "#.######")
+
+txt = 
+ "\n\n"   +
+ rate     + "\n\n" +
+ go       + "\n\n" +
+ win      + "\n\n" +
+ min_win  + "\n\n" +
+ max_win
+//
+
+var tb = table.new(position.top_right, 1, 1)
+if barstate.islast
+    table.cell(tb, 0, 0, txt, text_color=color.aqua, text_halign=text.align_left)
+//
