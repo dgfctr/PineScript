@@ -1,0 +1,68 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor [19.07.2024]
+
+//@version=5
+indicator("Calculator - Negatif Binom Dağılımı", overlay=true)
+
+// AÇIKLAMA 
+//      Diyelim ki iyi getiri sağladığını düşündüğünüz bir alım-satım sisteminiz var.
+//      Backtesti yaptınız ve sisteminizin başarısını ölçebilen bir metrik elde ettiniz. 
+//      Örneğin bu metrik WinRate olsun. (Başarı Yüzdesi : Başarılı işlem sayısının toplam işlem sayısına oranıdır.)
+//      Bu strateji ile işlemlere girmeyi düşünüyorsunuz.
+//      Bu işlemlerden n. başarılı işlemin k. işlem olma olasılığını işlemlere başlamadan önce nasıl hesaplayacaksınız? 
+//      Bu indikatör yukarıdaki soruya cevap verme arayışıyla hazırlanan basit bir hesap makinesidir.
+
+// Factorial
+f_factorial(n) =>
+    r = 1
+    for i = 1 to n
+        r := n == 0 ? 1 : r * i
+        r
+//
+
+// Combination
+f_combination(n, x) => 
+    f_factorial(n) / (f_factorial(x) * f_factorial(n - x))
+//
+
+// Negative Binomial Distrubition
+f_nth_win_is_kth(p, n, k) => 
+    f_combination(k - 1, n - 1) * math.pow(p, n) * math.pow(1 - p, k - n)
+//
+
+f_nth_win_is_before_kth(p, n, k) =>
+    x = 0.0
+    for i = 0 to n - 1
+        x += f_combination(k - 1, i) * math.pow(p, i) * math.pow(1 - p, k - 1 - i)
+    r = 1 - x
+//
+
+tt_p = "Stratejinin backtestinde elde edilen ve başarı olasılığını tanımlayan yüzdesel değerdir. 0-100 arasında değer alabilen herhangi bir metrik kullanılabilir. Örneğin WinRate (Başarılı işlem sayısının toplam işlem sayısına oranıdır)."
+tt_n = "Girilen tamsayı değeri bir işlem numarasını temsil eder. Başarılı işlemler arasındaki baştan x. işlem anlamını taşır."
+tt_k = "Girilen tamsayı değeri bir işlem numarasını temsil eder. Gerçekleştirilen bütün işlemler içindeki baştan x. işlem anlamını taşır."
+p = input.float(37.5, "Başarı Oranı %", tooltip=tt_p) / 100.
+n = input.int(5, "Başarılı İşlem No", maxval=100, tooltip=tt_n)
+k = input.int(12, "Hedef İşlem No", maxval=100, tooltip=tt_k)
+
+nth_win_is_kth          = f_nth_win_is_kth(p, n, k)
+nth_win_is_before_kth   = f_nth_win_is_before_kth(p, n, k)
+nth_win_is_after_kth    = 1 - nth_win_is_kth - nth_win_is_before_kth
+
+// Text
+rate                    = "Başarı oranı " + "%" + str.tostring(p * 100) + " olan bir stratejiyle gerçekleştirilecek olan işlemlerde;"
+t_nth_win_is_kth        = " ✔ " + str.tostring(n) + ". başarılı işlemin " + str.tostring(k) +". işlem olma olasılığı : %" + str.tostring(nth_win_is_kth * 100, "#.######")
+t_nth_win_is_before_kth = " ✔ " + str.tostring(n) + ". başarılı işlemin " + str.tostring(k) +". işlemden önce gerçekleşme olasılığı : %" + str.tostring(nth_win_is_before_kth * 100, "#.######")
+t_nth_win_is_after_kth  = " ✔ " + str.tostring(n) + ". başarılı işlemin " + str.tostring(k) +". işlemden sonra gerçekleşme olasılığı : %" + str.tostring(nth_win_is_after_kth * 100, "#.######")
+
+txt =
+ "\n\n" +
+ rate                       + "\n\n" + 
+ t_nth_win_is_kth           + "\n\n" +        
+ t_nth_win_is_before_kth    + "\n\n" + 
+ t_nth_win_is_after_kth  
+//
+
+var tb = table.new(position.top_right, 1, 1)
+if barstate.islast
+    table.cell(tb, 0, 0, txt, text_color=color.aqua, text_halign=text.align_left)
+//
