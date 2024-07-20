@@ -53,8 +53,6 @@ p = input.float(37.5, "Başarı Oranı %", tooltip=tt_p) / 100.
 n = input.int(100, "Toplam İşlem Sayısı", maxval=100, tooltip=tt_n)
 k = input.int(40, "Hedef İşlem Sayısı", maxval=100, tooltip=tt_k)
 
-// ╠══════════════════════════ Başarı Hesaplamaları ═══════════════════════════╣
-
 // Başarı Olasılığı
 basarili = f_binom(p, n, k)
 min_basarili = 0.0
