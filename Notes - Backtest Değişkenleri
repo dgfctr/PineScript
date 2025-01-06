@@ -1,0 +1,73 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+//@version=5
+strategy("{Notes} - Backtest - 1 - Değişkenler", overlay=true, initial_capital=100000,
+  default_qty_type=strategy.percent_of_equity, default_qty_value=100,  
+  commission_type=strategy.commission.percent, commission_value=0)
+//
+
+plotshape(barstate.isfirst, "@ dg_factor", shape.flag, location.bottom, #00000000, editable=false)
+
+// Condition
+longCondition = ta.crossover(ta.sma(close, 50), ta.sma(close, 200))
+shortCondition = ta.crossunder(ta.sma(close, 50), ta.sma(close, 200))
+
+// Long Giriş
+if (longCondition)
+    strategy.close(id='Short Entry', comment="Short Çıkış")
+    strategy.entry(id="Long Entry", direction=strategy.long, comment="Long Giriş")
+//
+
+// Short Giriş
+if (shortCondition)
+    strategy.close(id='Long Entry', comment="Long Çıkış")
+    strategy.entry(id="Short Entry", direction=strategy.short, comment="Short Giriş")
+//
+
+// ╔══════════════════════════════════════════════════════════════════════════════╗		
+// ║                                   NOTLAR                                     ║		
+// ╚══════════════════════════════════════════════════════════════════════════════╝		
+
+// ═════════════════════════════ Bazı Değişkenler ══════════════════════════════		
+
+// strategy.opentrades     // İşlem açıksa 1, kapalıysa 0 döner. (0'dan büyükse açık işlem vardır, değilse açık işlem yoktur)
+// strategy.position_size  // Quantity değeridir; pozitif ise işlem yönü Long, negatif ise işlem yönü Short'tur.
+
+baslangic_bakiyesi          = strategy.initial_capital                                                                  // float ($) 
+guncel_bakiye               = strategy.equity                                                                           // float ($)
+brut_kar                    = strategy.grossprofit                                                                      // float ($) (+) (karın kümülatif toplamı)
+brut_zarar                  = strategy.grossloss                                                                        // float ($) (+) (zararın kümülatif toplamı)
+gerceklesmis_kar            = strategy.netprofit                                                                        // float ($) (strategy.grossprofit - strategy.grossloss)
+gerceklesmis_kar_yuzde      = strategy.netprofit / strategy.initial_capital * 100                                       // float (%)
+gerceklesmemis_kar_yuzde    = (strategy.equity - strategy.initial_capital) / strategy.initial_capital * 100             // float (%)
+pozisyon                    = strategy.position_size != 0                                                               // bool 
+long_pozisyon               = strategy.position_size > 0                                                                // bool 
+short_pozisyon              = strategy.position_size < 0                                                                // bool 
+islem_yonu                  = strategy.position_size > 0 ? 1 : strategy.position_size < 0 ? -1 : 0                      // int 	
+long_giris                  = islem_yonu == 1 and (islem_yonu[1] == -1 or islem_yonu[1] == 0)                           // bool [süreksiz değişken]
+short_giris                 = islem_yonu == -1 and (islem_yonu[1] == 1 or islem_yonu[1] == 0)                           // bool [süreksiz değişken]
+giris                       = long_giris or short_giris                                                                 // bool [süreksiz değişken]
+long_cikis                  = islem_yonu[1] == 1 and (islem_yonu == -1 or islem_yonu == 0)                              // bool [süreksiz değişken]
+short_cikis                 = islem_yonu[1] == -1 and (islem_yonu == 1 or islem_yonu == 0)                              // bool [süreksiz değişken]
+cikis                       = long_cikis or short_cikis                                                                 // bool [süreksiz değişken]
+karli_cikis                 = strategy.wintrades != strategy.wintrades[1]                                               // bool [süreksiz değişken]
+zararli_cikis               = strategy.losstrades != strategy.losstrades[1]                                             // bool [süreksiz değişken]
+giris_fiyati                = strategy.opentrades.entry_price(strategy.opentrades - 1)                                  // float ($) (giriş gerçekleştikten sonra tanımlı değer döndürür)
+cikis_fiyati                = strategy.closedtrades.exit_price(strategy.closedtrades - 1)                               // float ($) (çıkış gerçekleştikten sonra tanımlı değer döndürür)
+acik_islemdeki_kar          = strategy.openprofit                                                                       // float ($) (çıkış komisyonu dahil değildir)
+acik_islem_karda            = strategy.openprofit > 0                                                                   // bool    
+acik_islem_zararda          = strategy.openprofit < 0                                                                   // bool    
+karli_islem_sayisi          = strategy.wintrades                                                                        // int 
+zararli_islem_sayisi        = strategy.losstrades                                                                       // int 
+islem_sayisi                = ta.cum(giris ? 1 : 0)                                                                     // int
+long_islem_sayisi           = ta.cum(long_giris ? 1 : 0)                                                                // int
+short_islem_sayisi          = ta.cum(short_giris ? 1 : 0)                                                               // int
+islem_uzunlugu              = ta.barssince(giris)                                                                       // int  
+kazanc_katsayisi            = strategy.grossprofit / strategy.grossloss                                                 // float (k) profit factor
+ortalama_kar                = strategy.grossprofit / strategy.wintrades                                                 // float ($)
+ortalama_zarar              = strategy.grossloss / strategy.losstrades                                                  // float ($)
+ortalama_kar_zarar_orani    = ortalama_kar / ortalama_zarar                                                             // float (k)
+komisyon_acik_islem         = strategy.opentrades.commission(strategy.opentrades - 1)                                   // float ($)
+komisyon_kapanan_islem      = strategy.closedtrades.commission(strategy.closedtrades - 1)                               // float ($)
+komisyon                    = nz(fixnan(ta.cum(cikis ? komisyon_kapanan_islem : na)) + komisyon_acik_islem)             // float ($)
