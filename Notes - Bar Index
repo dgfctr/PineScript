@@ -1,0 +1,45 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+//@version=5
+indicator(title='Notes - Bar Index', overlay=false, max_labels_count=500)
+
+// Bar no tablo
+var table bar_tablo = table.new(position.top_right, 1, 4)
+if barstate.islast
+    table.cell(bar_tablo, 0, 0, "", text_color=#696969)
+    table.cell(bar_tablo, 0, 1, str.tostring(syminfo.tickerid), text_color=#696969)
+    table.cell(bar_tablo, 0, 2, "# " + str.tostring(bar_index), text_color=#696969)
+//
+
+// Kontrol
+plot(bar_index, title="bar_index ⟶", color=color.blue, display=display.data_window)
+plot(last_bar_index - bar_index + 1, title="lookback ⟵", color=color.orange, display=display.data_window)
+
+// Input
+n = input.int(title="maxval: bar_index", defval=27)
+
+// Bar no etiket
+barindex = label.new(bar_index,     0, text=str.tostring(bar_index),     style=label.style_none, textcolor=color.green)
+n_devam  = label.new(bar_index + n, 0, text=str.tostring(bar_index + n), style=label.style_none, textcolor=color.red)
+label.delete(n_devam[n])
+
+// // TANIM 
+// barindex = ta.cum(1) - 1
+// f_bar_index() =>
+//     var int i = 0
+//     i += 1
+//     r = i - 1
+// //
+
+// Sinyal oluştuktan sonra üçüncü barın kapanış değeri
+// f_deger(sinyal) =>
+//     ta.valuewhen(ta.barssince(sinyal) == 3, close, 0)
+
+// // 150. bardaki kapanış değeri 
+// kapanis_150 = ta.valuewhen(bar_index + 1 == 150, close, 0)
+
+// // Her n barda bir gerçekleşen koşul
+// u = input.int(500)
+// kosul = bar_index % u == 0
+// bgcolor(kosul ? color.new(color.teal, 90) : na)
