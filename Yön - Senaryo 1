@@ -1,0 +1,39 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+// Açıklama
+//      Bu kod Yön değişkeninin nasıl üretildiğini temellendirmek amacıyla oluşturulmuştur.
+//      Aşağıdaki versiyonda sadece giriş koşullarına dayalı olan senaryo modellenir.
+
+//@version=6
+indicator("Yön - Senaryo 1", overlay=true)
+
+len_1 = input.int(50,  "Uzunluk 1")
+len_2 = input.int(200, "Uzunluk 2")
+sma_1 = ta.sma(close, len_1)
+sma_2 = ta.sma(close, len_2)
+
+// Entry 
+long_entry  = ta.crossover(sma_1, sma_2)
+short_entry = ta.crossunder(sma_1, sma_2)
+
+// Çizimler
+plot(sma_1, "Sma 1", #2962ff50)
+plot(sma_2, "Sma 2", #ff980050)
+plotshape(long_entry,  "Long Entry",  shape.triangleup,   location.top, #00bb00, size=size.tiny)
+plotshape(short_entry, "Short Entry", shape.triangledown, location.top, #fb0000, size=size.tiny)
+
+// ╠═══════════════════════════════ İşlem Yönü ════════════════════════════════╣
+
+// Yön Değişkeni
+yon = 0
+yon := long_entry ? 1 : short_entry ? -1 : nz(yon[1])
+
+// Yön Çıktısı
+plot(yon, "Yön", display=display.data_window, precision=0)
+
+// ╠═══════════════════════════════════════════════════════════════════════════╣
+
+// Barları Renklendir
+barcolor(yon == 1 ? #00ff00 : yon == -1 ? #ff0000 : #333333)    // Sinyal oluşumu itibariyle barları boyar.
+// barcolor(yon[1] == 1 ? #00ff00 : yon[1] == -1 ? #ff0000 : #333333)  // Sinyal oluşumundan sonraki (sinyalin kesinleştiği) barları boyar.
