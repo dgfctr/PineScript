@@ -6,7 +6,7 @@
 //      Aşağıdaki versiyon, sadece Long Giriş ve Short Giriş koşullarınıza dayalı senaryoyu modeller.
 
 //@version=6
-indicator("Yön 1", overlay=true)
+indicator("Yön : Senaryo 1", overlay=true)
 
 len_1 = input.int(50)
 len_2 = input.int(200)
