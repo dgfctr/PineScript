@@ -71,3 +71,4 @@ ortalama_kar_zarar_orani    = ortalama_kar / ortalama_zarar                     
 komisyon_acik_islem         = strategy.opentrades.commission(strategy.opentrades - 1)                                   // float ($)
 komisyon_kapanan_islem      = strategy.closedtrades.commission(strategy.closedtrades - 1)                               // float ($)
 komisyon                    = nz(fixnan(ta.cum(cikis ? komisyon_kapanan_islem : na)) + komisyon_acik_islem)             // float ($)
+//
