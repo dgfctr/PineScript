@@ -1,0 +1,51 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+// Açıklama
+//      Bu kod Yön değişkeninin nasıl üretildiğini temellendirmek amacıyla oluşturulmuştur.
+//      Aşağıdaki versiyonda giriş, çıkış ve tarih aralığı koşullarına dayalı olan senaryo modellenir.
+
+//@version=6
+indicator("Yön - Senaryo 3", overlay=true)
+
+basla = input.time(timestamp("01 Jan 1980 03:00 GMT+3"), "Başla")
+bit   = input.time(timestamp("31 Dec 2050 03:00 GMT+3"), "Bit")
+tarih_araligi = basla <= time and bit >= time
+
+len_1 = input.int(50,  "Uzunluk 1")
+len_2 = input.int(200, "Uzunluk 2")
+sma_1 = ta.sma(close, len_1)
+sma_2 = ta.sma(close, len_2)
+
+// Entry & Exit
+long_entry          = ta.crossover(sma_1, sma_2)
+short_entry         = ta.crossunder(sma_1, sma_2)
+long_stop_fiyati    = ta.valuewhen(long_entry, open - ta.atr(20) * 2, 0)
+short_stop_fiyati   = ta.valuewhen(short_entry, open + ta.atr(20) * 2, 0)
+long_exit           = ta.crossunder(low, long_stop_fiyati)
+short_exit          = ta.crossover(high, short_stop_fiyati)
+
+// Çizimler
+plot(sma_1, "Sma 1", #2962ff50)
+plot(sma_2, "Sma 2", #ff980050)
+plotshape(not tarih_araligi ? bool(na) : long_entry,  "Long Entry",  shape.triangleup,   location.top,    #00bb00, size=size.tiny)
+plotshape(not tarih_araligi ? bool(na) : short_entry, "Short Entry", shape.triangledown, location.top,    #fb0000, size=size.tiny)
+
+// ╠═══════════════════════════════ İşlem Yönü ════════════════════════════════╣
+
+// Yön Değişkeni
+yon = 0
+yon := not tarih_araligi ? 0 : long_entry ? 1 : short_entry ? -1 : long_exit or short_exit ? 0 : nz(yon[1])
+
+// Yön Çıktısı
+plot(yon, "Yön", display=display.data_window, precision=0)
+
+// ╠═══════════════════════════════════════════════════════════════════════════╣
+
+// Barları Renklendir
+barcolor(yon == 1 ? #00ff00 : yon == -1 ? #ff0000 : #333333)    // Sinyal oluşumu itibariyle barları boyar.
+// barcolor(yon[1] == 1 ? #00ff00 : yon[1] == -1 ? #ff0000 : #333333)  // Sinyal oluşumundan sonraki (sinyalin kesinleştiği) barları boyar.
+
+// Opsiyonel Stop Çizimi
+plot(yon == 1  ? long_stop_fiyati  : na, "Stop Fiyatı [$]", #ffffff, style=plot.style_linebr)
+plot(yon == -1 ? short_stop_fiyati : na, "Stop Fiyatı [$]", #ffffff, style=plot.style_linebr)
