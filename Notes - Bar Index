@@ -38,6 +38,7 @@ label.delete(n_devam[n])
 
 // // 150. bardaki kapanış değeri 
 // kapanis_150 = ta.valuewhen(bar_index + 1 == 150, close, 0)
+//
 
 // // Her n barda bir gerçekleşen koşul
 // u = input.int(500)
