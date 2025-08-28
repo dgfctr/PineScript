@@ -1,0 +1,269 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+//@version=5
+indicator("{Built-in} - Time-Index-Date-Duration", overlay=true)
+
+// ╠══════════════════════════════════ Data ═══════════════════════════════════╣
+
+u1 = input.int(50)
+u2 = input.int(200)
+data_1 = ta.sma(close, u1)
+data_2 = ta.sma(close, u2)
+sinyal = ta.cross(data_1, data_2)
+plot(data_1, title="data 1", color=color.green)
+plot(data_2, title="data 2", color=color.red)
+plotshape(sinyal, "cross", location=location.belowbar, color=color.aqua, size=size.tiny)
+
+// n = input.int(3)
+// sinyal = bar_index == n
+// plotshape(sinyal, "sinyal", location=location.top, color=color.aqua, size=size.small)
+
+// Not : Bar Numarası (bar_index) ile Bar Sayısı (uzunluk) farklı şeylerdir.
+
+// Sinyal Anı
+sinyal_index = ta.valuewhen(sinyal, bar_index, 0)       // bar_index    (sinyal oluştuğunda bar_index değeri)
+sinyal_time  = ta.valuewhen(sinyal, time, 0)            // time         (sinyal oluştuğunda time değeri)
+
+plot(sinyal_index, title="Kontrol - sinyalin bar_index'i", display=display.data_window)
+plot(sinyal_time, title="Kontrol - sinyalin time'ı", display=display.data_window)
+
+// Sinyale Olan Uzaklık 
+bars_since  = bar_index - sinyal_index                  // bar_sayısı  = ta.barssince(sinyal)    
+unix_since  = time - sinyal_time 
+
+// Tablo
+var tablo = table.new(position.top_right, 2, 50)
+f_tablo(_columns, _row, _color, _text) =>
+    table.cell(tablo, _columns, _row, _text, text_color=_color, text_halign=text.align_left)
+//
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║                               HESAPLAMALAR                                ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+// ╠════════════════════════════════ Duration ═════════════════════════════════╣
+
+// Mevcut timeframe'de ardışık iki bar arasındaki milisaniye miktarını verir : time-time[1]
+// time değişkenini "time_index" gibi düşünebiliriz; fakat artış miktarı bar_index'te olduğu gibi 1 değil, duration kadardır.
+duration = timeframe.in_seconds(timeframe.period) * 1000
+
+// ╠═══════════════════════════ Süre Fonksiyonları ════════════════════════════╣
+
+// Girilen time değerini yıl, gün saat, dakika formatına çevirir. (sonuç: int)
+f_ygsd(x) =>
+    s      = math.round(x / 1000)
+    yil    = math.floor(s / 31557600)
+    gun    = math.floor((s % 31557600) / 86400)
+    saat   = math.floor((s % 86400) / 3600)
+    dakika = math.floor((s % 3600) / 60)
+    saniye = s % 60
+    [yil, gun, saat, dakika]
+//
+
+// Girilen yıl, gün, saat, dakika değerlerini "[a Yıl, b Gün, c Sa, d Dk]" formatına çevirir. (sonuç: string süre)
+f_str_ygsd(yil, gun, saat, dakika) =>
+    // String
+    dk_yok     = timeframe.in_seconds(timeframe.period) / 60 >= 60
+    saat_yok   = timeframe.in_seconds(timeframe.period) / 60 >= 1440
+    str_yil    = yil == 0 ? na : str.tostring(yil) + " Yıl, "
+    str_gun    = gun == 0 ? na : (dk_yok and saat_yok) or (dakika == 0 and saat == 0) ? str.tostring(gun) + " Gün" : str.tostring(gun) + " Gün, "
+    str_saat   = saat_yok or saat == 0 ? na : dk_yok or dakika == 0 ? str.tostring(saat) + " Sa" : str.tostring(saat) + " Sa, "
+    str_dakika = dk_yok or dakika == 0 ? na : str.tostring(dakika) + " Dk"  
+    r = "[" + str_yil + str_gun + str_saat + str_dakika + "]"
+//
+
+// ╠═════════════════════ bar_index Dönüşüm Fonksiyonları ═════════════════════╣
+
+// Girilen bar_index değerinin time cinsinden karşılığını hesaplar. (sonuç: int)
+f_barindex_to_time(x) => 
+    r = ta.valuewhen(x==bar_index, time, 0)
+//
+
+// Girilen bar_index değerinin tarihini (gg.aa.yyyy - ss:dd) verir. (sonuç: string date)
+f_barindex_tarih(x) =>
+    p = ta.valuewhen(x==bar_index, time, 0)
+    r = str.format_time(p, "dd.MM.yyyy - HH:mm", 'GMT+3')
+//
+
+// Girilen bar_index değerinden bu yana geçen bar sayısını hesaplar. (sonuç: int)
+f_barindex_mesafe_bars(x) =>
+    r = bar_index - x
+//
+
+// Girilen bar_index değerinden bu yana geçen milisaniye sayısını hesaplar. (sonuç: int)
+f_barindex_mesafe_unix(x) =>
+    p = ta.valuewhen(x==bar_index, time, 0)
+    r = time - p
+//
+
+// Girilen bar_index değerinden bu yana geçen süreyi string olarak verir. (sonuç: string süre)
+f_barindex_mesafe_sure(x) =>
+    p = ta.valuewhen(x==bar_index, time, 0)
+    q = time - p
+    [_y, _g, _s, _d] = f_ygsd(q)
+    r = f_str_ygsd(_y, _g, _s, _d)
+//
+
+barindex_to_time     = f_barindex_to_time(sinyal_index) 
+barindex_tarih       = f_barindex_tarih(sinyal_index)
+barindex_mesafe_bar  = f_barindex_mesafe_bars(sinyal_index)
+barindex_mesafe_unix = f_barindex_mesafe_unix(sinyal_index)
+barindex_mesafe_sure = f_barindex_mesafe_sure(sinyal_index)
+
+if barstate.islast
+    f_tablo(0, 0, color.aqua, "\n")
+    f_tablo(0, 1, color.aqua, "barindex_to_time"     + " : ")
+    f_tablo(0, 2, color.aqua, "barindex_tarih"       + " : ")
+    f_tablo(0, 3, color.aqua, "barindex_mesafe_bar"  + " : ")
+    f_tablo(0, 4, color.aqua, "barindex_mesafe_unix" + " : ")
+    f_tablo(0, 5, color.aqua, "barindex_mesafe_sure" + " : ")
+    f_tablo(1, 0, color.aqua, "")
+    f_tablo(1, 1, color.aqua, str.tostring(barindex_to_time     ))
+    f_tablo(1, 2, color.aqua, str.tostring(barindex_tarih       ))
+    f_tablo(1, 3, color.aqua, str.tostring(barindex_mesafe_bar  ))
+    f_tablo(1, 4, color.aqua, str.tostring(barindex_mesafe_unix ))
+    f_tablo(1, 5, color.aqua, str.tostring(barindex_mesafe_sure ))
+//
+
+// ╠═══════════════════════ time Dönüşüm Fonksiyonları ════════════════════════╣
+
+f_time_to_barindex(x) =>
+    r = ta.valuewhen(x==time, bar_index, 0)
+//
+
+// Girilen time değerinin tarihini (gg.aa.yyyy - ss:dd) verir. (sonuç: string date)
+f_time_tarih(x) => 
+    r = str.format_time(x, "dd.MM.yyyy - HH:mm", 'GMT+3')
+//
+
+// Girilen time değerinden bu yana geçen bar sayısını hesaplar. (sonuç: int)
+f_time_mesafe_bars(x) =>
+    p = ta.valuewhen(x==time, bar_index, 0)
+    r = bar_index - p
+//
+
+// Girilen time değerinden bu yana geçen milisaniye sayısını hesaplar. (sonuç: int)
+f_time_mesafe_unix(x) =>
+    r = time - x
+//
+
+// Girilen time değerinden bu yana geçen süreyi string olarak verir. (sonuç: string süre)
+f_time_mesafe_sure(x) =>
+    p = time - x
+    [_y, _g, _s, _d] = f_ygsd(p)
+    r = f_str_ygsd(_y, _g, _s, _d)
+//
+
+time_to_barindex = f_time_to_barindex(sinyal_time) 
+time_tarih       = f_time_tarih(sinyal_time)
+time_mesafe_bar  = f_time_mesafe_bars(sinyal_time)
+time_mesafe_unix = f_time_mesafe_unix(sinyal_time)
+time_mesafe_sure = f_time_mesafe_sure(sinyal_time)
+
+if barstate.islast
+    f_tablo(0, 6 , color.orange, "")
+    f_tablo(0, 7 , color.orange, "time_to_barindex" + " : ")
+    f_tablo(0, 8 , color.orange, "time_tarih"       + " : ")
+    f_tablo(0, 9 , color.orange, "time_mesafe_bar"  + " : ")
+    f_tablo(0, 10, color.orange, "time_mesafe_unix" + " : ")
+    f_tablo(0, 11, color.orange, "time_mesafe_sure" + " : ")
+    f_tablo(1, 6 , color.orange, "")
+    f_tablo(1, 7 , color.orange, str.tostring(time_to_barindex ))
+    f_tablo(1, 8 , color.orange, str.tostring(time_tarih       ))
+    f_tablo(1, 9 , color.orange, str.tostring(time_mesafe_bar  ))
+    f_tablo(1, 10, color.orange, str.tostring(time_mesafe_unix ))
+    f_tablo(1, 11, color.orange, str.tostring(time_mesafe_sure ))
+//
+
+// ╠════════════════════ bars_since Dönüşüm Fonksiyonları ═════════════════════╣
+
+// Girilen bar sayısı kadar uzaklıktaki barın bar_index değerini verir. (sonuc : int) 
+f_bars_to_barindex(x) =>
+    r = bar_index - x
+//
+
+// Girilen bar sayısı kadar uzaklıktaki barın time değerini verir. (sonuç: int)
+f_bars_to_time(x) =>
+    p = bar_index - x
+    r = ta.valuewhen(p==bar_index, time, 0)
+//
+
+// Girilen bar sayısı kadar uzaklıktaki barın tarihini (gg.aa.yyyy - ss:dd) verir. (sonuç: string date)
+f_bars_tarih(x) =>
+    p = bar_index - x
+    q = ta.valuewhen(p==bar_index, time, 0)
+    r = str.format_time(q, "dd.MM.yyyy - HH:mm", 'GMT+3')
+//
+
+// Girilen bar sayısı kadar uzaklıktaki bardan bu yana geçen milisaniye sayısını hesaplar. (sonuç: int)
+f_bars_mesafe_unix(x) =>
+    p = bar_index - x
+    q = ta.valuewhen(p==bar_index, time, 0)
+    r = time - q
+//
+
+// Girilen bar sayısı kadar uzaklıktaki bardan bu yana geçen süreyi string olarak verir. (sonuç: string süre)
+f_bars_mesafe_sure(x) =>
+    p = bar_index - x
+    q = ta.valuewhen(p==bar_index, time, 0)
+    t = time - q
+    [_y, _g, _s, _d] = f_ygsd(t)
+    r = f_str_ygsd(_y, _g, _s, _d)
+//
+
+bars_to_barindex = f_bars_to_barindex(bars_since)
+bars_to_time     = f_bars_to_time(bars_since)
+bars_tarih       = f_bars_tarih(bars_since)
+bars_mesafe_unix = f_bars_mesafe_unix(bars_since)
+bars_mesafe_sure = f_bars_mesafe_sure(bars_since)
+
+if barstate.islast
+    f_tablo(0, 12, #00bb00, "")
+    f_tablo(0, 13, #00bb00, "bars_to_barindex"  + " : ")
+    f_tablo(0, 14, #00bb00, "bars_to_time"      + " : ")
+    f_tablo(0, 15, #00bb00, "bars_tarih"        + " : ")
+    f_tablo(0, 16, #00bb00, "bars_mesafe_unix"  + " : ")
+    f_tablo(0, 17, #00bb00, "bars_mesafe_sure"  + " : ")
+    f_tablo(1, 12, #00bb00, "")
+    f_tablo(1, 13, #00bb00, str.tostring(bars_to_barindex ))
+    f_tablo(1, 14, #00bb00, str.tostring(bars_to_time     ))
+    f_tablo(1, 15, #00bb00, str.tostring(bars_tarih       ))
+    f_tablo(1, 16, #00bb00, str.tostring(bars_mesafe_unix ))
+    f_tablo(1, 17, #00bb00, str.tostring(bars_mesafe_sure ))
+//
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║                                   LINK                                    ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+// More info about time : 
+// https://www.tradingview.com/pine-script-docs/en/v5/concepts/Time.html?#time
+
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║                                  NOTLAR                                   ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+// 1) Unix 1970'ten bu yana geçen milisaniye sayısıdır. (Ayrıca bkz. epoch, POSIX)
+// 2) Unix'in başlangıç (0) değeri 1 Ocak 1970 Perşembe 00:00'dır. Negatif değerler 1970'e kadar olan milisaniye sayısıdır.
+// 3) time ya da timeclose gibi değişkenler seri belirtir ve zamanı Unix cinsinden ifade eder.
+//      time değişkeni barın açılış zamanıdır, timeclose değişkeni barın kapanış zamanıdır. 
+//      (timeclose değişkeni halihazırda açık olan bir bar için geleceğe dair bir değer döndürür) 
+// 4) timestamp herhangi bir zaman serisinin belirli bir noktasını Unix cinsinden tanımlar. 
+// 5) Duration, iki bar arasındaki Unix değerini verir. 
+//      d = time-time[1] olarak kabul edilir ama aylık ve üzeri timeframelerde kalibrasyon hataları gözlemlendi. Bu nedenle aşağıdaki değişken daha etkilidir;
+//      d = timeframe.in_seconds(timeframe.period) * 1000
+// 6) Belirli zaman dilimlerinin milisaniye değerleri şu şekildedir : 
+//      1 saniye = 1000
+//      1 dakika = 60000
+//      1 saat   = 3600000
+//      1 gün    = 86400000
+//      1 yıl    = 31557600000 (1gün*365.25)
+// 7) Saniye cinsinden sonuçlar //  timeframe.in_seconds(time_frame) kulanılması durumunda gerekli olabiliyor : 
+//      1 saniye = 1
+//      1 dakika = 60
+//      1 saat   = 3600
+//      1 gün    = 86400
+//      1 yıl    = 31557600 (1gün*365.25)
+
