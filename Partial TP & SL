@@ -3,7 +3,7 @@
 
 // Tanım
 //      Bu komut, kademeli stop VEYA kademeli profit çıkışlarında PnL sonucunu hesaplamak ve pozisyon yönetimini kolaylaştırmak amacıyla hazırlanmıştır. 
-//      Yardımcı bir komuttur, doğrudan sinyallerinize adapte edilemez. Adapte edilebilen versiyon için iletişime geçebilirsiniz.
+//      Yardımcı bir komuttur, öneride bulunmaz, doğrudan sinyallerinize adapte edilemez. Adaptif versiyon için iletişime geçebilirsiniz.
 //      Stop ve profit seçeneklerinin birlikte kullanılması önerilmez, çünkü; 
 //          İşlem sonuçlarını modelleyebilmek için fiyatın önce stop seviyelerine mi yoksa profit seviyelerine mi gideceği bilgisine ihtiyaç vardır. 
 //          Dolayısıyla sonuçlar, 'sadece kademeli stop' veya 'sadece kademeli profit' ölçeğinde ele alınmalıdr, stop ve profit arasındaki öncelik-sonralık ilişkisi gözardı edilmiştir. 
