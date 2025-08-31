@@ -6,7 +6,7 @@
 //      Yardımcı bir komuttur, öneride bulunmaz, doğrudan sinyallerinize adapte edilemez. Adaptif versiyon için iletişime geçebilirsiniz.
 //      Stop ve profit seçeneklerinin birlikte kullanılması önerilmez, çünkü; 
 //          İşlem sonuçlarını modelleyebilmek için fiyatın önce stop seviyelerine mi yoksa profit seviyelerine mi gideceği bilgisine ihtiyaç vardır. 
-//          Dolayısıyla sonuçlar, 'sadece kademeli stop' veya 'sadece kademeli profit' ölçeğinde ele alınmalıdr, stop ve profit arasındaki öncelik-sonralık ilişkisi gözardı edilmiştir. 
+//          Dolayısıyla sonuçlar, 'sadece kademeli stop' veya 'sadece kademeli profit' ölçeğinde ele alınmalıdr, stop ve profit arasındaki öncelik-sonralık ilişkisi bu komutta gözardı edilmiştir. 
 //      Komut, kullanıcının işleme tek seferde girdiğini varsayar, dolayısıyla giriş komisyonu bu çerçevede hesaplanır. 
 //      Çıkış komisyonları, (olması gerektiği gibi) her çıkış seviyesi için ayrı ayrı hesaplanır.
 //      Yöntem : Kullanıcı doğrudan fiyat ve (yüzdesel) miktar bilgisini girer, PnL otomatik olarak raporlanır.
