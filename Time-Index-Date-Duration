@@ -2,7 +2,7 @@
 // © dg_factor
 
 //@version=5
-indicator("{Built-in} - Time-Index-Date-Duration", overlay=true)
+indicador("{Built-in} - Time-Index-Date-Duration", overlay=true)
 
 // ╠══════════════════════════════════ Data ═══════════════════════════════════╣
 
