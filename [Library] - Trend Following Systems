@@ -1,0 +1,127 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+//@version=6
+library("lib_trend_following_systems", overlay=true)
+
+// SUPERTREND [Olivier Seban, 2001]
+export f_supertrend(series float data, simple int length, series float multiplier) =>
+    a = ta.atr(length)
+    b = multiplier * a
+    c = data - b
+    d = data + b
+    c := c > nz(c[1]) or close[1] < nz(c[1]) ? c : nz(c[1])
+    d := d < nz(d[1]) or close[1] > nz(d[1]) ? d : nz(d[1])
+    supertrend = 0.0
+    supertrend := close > nz(supertrend[1]) ? c : close < nz(supertrend[1]) ? d : nz(supertrend[1])
+    // supertrend := na(a) ? na : na(a[1]) ? c : close > nz(supertrend[1]) ? c : close < nz(supertrend[1]) ? d : nz(supertrend[1]) // Grafik başlangıcında daha tutarlı davranan versiyon
+//
+
+// MOST - Moving Stop Loss Indicator [Anıl Özekşi, 2003]
+export f_most(series float data, series float multiplier) =>
+    a = data / 100.
+    b = multiplier * a
+    c = data - b
+    d = data + b
+    c := c > nz(c[1]) or data < nz(c[1]) ? c : nz(c[1])
+    d := d < nz(d[1]) or data > nz(d[1]) ? d : nz(d[1])
+    most = 0.0
+    most := data > nz(most[1]) ? c : data < nz(most[1]) ? d : nz(most[1]) 
+    // most := na(a) ? na : na(a[1]) ? c : data > nz(most[1]) ? c : data < nz(most[1]) ? d : nz(most[1]) // Grafik başlangıcında daha tutarlı davranan versiyon
+//
+
+// OTT - Optimized Trend Tracker [Anıl Özekşi, 2018]
+export f_ott(series float data, series float multiplier) =>
+    a = data / 100.
+    b = a * multiplier
+    c = data - b
+    d = data + b
+    c := c > nz(c[1]) or data < nz(c[1]) ? c : nz(c[1])
+    d := d < nz(d[1]) or data > nz(d[1]) ? d : nz(d[1])
+    e = 0.0
+    e := data > nz(e[1]) ? c : data < nz(e[1]) ? d : nz(e[1]) // MOST 
+    f = multiplier / 100.
+    g = 1 + f / 2.
+    h = 1 - f / 2.
+    i = data > e ? e * g : e * h
+    ott = nz(i[2])
+//
+
+// Pmax - Profit Maximizer - [Kıvanç Özbilgiç, 2020]
+export f_pmax(series float data, simple int length, series float multiplier) =>
+    a = ta.atr(length)
+    b = multiplier * a
+    c = data - b
+    d = data + b
+    c := c > nz(c[1]) or data < nz(c[1]) ? c : nz(c[1])
+    d := d < nz(d[1]) or data > nz(d[1]) ? d : nz(d[1])
+    pmax = 0.0
+    pmax := data > nz(pmax[1]) ? c : data < nz(pmax[1]) ? d : nz(pmax[1])
+    // pmax := na(a) ? na : na(a[1]) ? c : data > nz(pmax[1]) ? c : data < nz(pmax[1]) ? d : nz(pmax[1]) // Grafik başlangıcında daha tutarlı davranan versiyon
+//
+
+// AlphaTrend - [Kıvanç Özbilgiç, 2022]
+export f_alphatrend(series float data_high, series float data_low, series float multiplier, simple int length, simple bool filter) =>
+    a = ta.sma(ta.tr, length)
+    b = multiplier * a
+    c = data_low - b
+    d = data_high + b
+    e = filter ? ta.rsi(close, length) >= 50 : ta.mfi(hlc3, length) >= 50   // Orijinal indikatördeki novolumedata filtresi varsayılan olarak false'tur. Bu nedenle MFI filtresi kullanılır.
+    alphatrend = 0.0
+    alphatrend := e and c > nz(alphatrend[1]) ? c : not e and d < nz(alphatrend[1]) ? d : nz(alphatrend[1])
+    // alphatrend := na(a) ? na : na(a[1]) ? c : e and c > nz(alphatrend[1]) ? c : not e and d < nz(alphatrend[1]) ? d : nz(alphatrend[1]) // // Grafik başlangıcında daha tutarlı davranan versiyon
+//
+
+// ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
+// ║                                             BONUS                                             ║
+// ╚═══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+// // Trailing Reverse [Konstantin Kopyrkin, 2001]
+// // Açıklamalar : 
+// // Hesaplama, MOST indikatörüyle birebir aynıdır. 
+// // Tek farklılık kaynak değişkenindedir.
+// // Trailig Reverse'te kaynak olarak close kullanılırken, Most'ta kaynak olarak hareketli ortalama kullanılır.
+// export f_trailing_reverse(series float multiplier) =>
+//     a = close / 100.
+//     b = multiplier * a
+//     c = close - b
+//     d = close + b
+//     c := c > nz(c[1]) or close < nz(c[1]) ? c : nz(c[1])
+//     d := d < nz(d[1]) or close > nz(d[1]) ? d : nz(d[1])
+//     ntnr = 0.0
+//     ntnr := close > nz(ntnr[1]) ? c : close < nz(ntnr[1]) ? d : nz(ntnr[1]) 
+// // 
+
+// // Chandelier Exit [Chuck LeBeau, 2002]
+// // Açıklamalar : 
+// // Hesaplama, Supertrend indikatörüyle birebir aynıdır.
+// // Tek farklılık bant tanımındadır.
+// // Supertrend'de üst bant ve alt bant değişkenleri high ve low ile tanımlıyken, Chandelier Exit'te highest ve lowest fonksiyonları kullanılır.
+// export f_chandelier_exit(series float data, simple int length, series float multiplier) =>
+//     a = ta.atr(length)
+//     b = multiplier * a
+//     c = ta.lowest(22)  - b
+//     d = ta.highest(22) + b
+//     c := c > nz(c[1]) or close[1] < nz(c[1]) ? c : nz(c[1])
+//     d := d < nz(d[1]) or close[1] > nz(d[1]) ? d : nz(d[1])
+//     r = 0.0
+//     r := na(a) ? na : na(a[1]) ? c : close > nz(r[1]) ? c : close < nz(r[1]) ? d : nz(r[1]) 
+// //
+
+// // MagicTrend - [Metatrader platformunda yayınlanmış anonim bir indikatördür, 2016]
+// // Açıklamalar : 
+// // Hesaplama AlphaTrend indikatörüyle birebir aynıdır.
+// // Tek farklılık filtre değişkenindedir.
+// // Alphatrend'de kullanıcı tanımlı olarak MFI veya RSI filtresi kullanılabiliyorken, Magictrend'de filtre olarak CCI kullanılır. 
+// export f_magic_trend(series float data_high, series float data_low, series float multiplier, simple int length) =>
+//     a = ta.sma(ta.tr, length)
+//     b = multiplier * a
+//     c = data_low - b
+//     d = data_high + b
+//     e = ta.cci(close, length) >= 0
+//     magictrend = 0.0
+//     magictrend := e and c > nz(magictrend[1]) ? c : not e and d < nz(magictrend[1]) ? d : nz(magictrend[1])
+// //
+
+// Bitti :)
+plotshape(barstate.isfirst, "@ dg_factor", shape.flag, location.bottom, #00000000, precision=1, editable=false)
