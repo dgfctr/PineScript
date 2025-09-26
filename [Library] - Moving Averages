@@ -1,0 +1,586 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor [24.10.2022]
+
+// You are free to: Share, adapt, remix, transform and build upon the material.
+// Attribution Required: Credit must be given to original developers listed below.
+// Special recognition to the Pine Script community, TradingView platform and all original algorithm developers who made their work available.
+
+// AFF      [Adaptive Frequency Filter]                             @ dg_factor
+// AHMA     [Ahrens Moving Average]                                 @ everget
+// AUF      [Auto Filter]                                           @ everget
+// BAMA     [Bryant Adaptive Moving Average]                        @ everget
+// BWF      [Butterworth Filter Pole 3]                             @ everget
+// CTI      [Coral Trend Indicator]                                 @ LazyBear 
+// DEC      [Simple Decycler]                                       @ everget
+// DEVS     [Deviation Scaled Moving Average]                       @ everget
+// EDMA     [Exponentially Deviating Moving Average]                @ MightyZinger
+// EMA      [Exponential Moving Average]                            @ TradingView
+// EMAC     [Exponential Moving Average - Coefficient]              @ dg_factor
+// EVMA     [Elastic Volume Weighted Moving Average]                @ everget
+// FRAMA    [Fractal Adaptive Moving Average]                       @ everget
+// FX-LIN   [Fibonacci X Level - Linear]                            @ dg_factor
+// FX-LOG   [Fibonacci X Level - Logarithmic]                       @ dg_factor
+// GAUS     [Gaussian Filter]                                       @ everget
+// GHL      [Gann High Low]                                         @ ChrisMoody
+// GMA      [Geometric Moving Average]                              @ TradingView 
+// HMA      [Harmonic Moving Average]                               @ TradingView
+// HEMA     [Holt Exponential Moving Average]                       @ everget
+// HSMA     [Hirashima Sugita Moving Average]                       @ alexgrover
+// HULL     [Hull Moving Average]                                   @ Tradingview
+// IIRF     [Infinite Impulse Response Filter]                      @ everget
+// JMA      [Jurik Moving Average]                                  @ everget
+// KAMA     [Kaufman Adaptive Moving Average]                       @ everget
+// LAG      [Laguerre Filter]                                       @ everget
+// LRL      [Linear Regression Line]                                @ TradingView
+// MAVW     [Mavilim Weighted Moving Average]                       @ KivancOzbilgic
+// MCGD     [McGinley Dynamic Moving Average]                       @ Tradingview
+// MID      [Median Moving Average]                                 @ TradingView
+// PKF      [Parametric Kalman Filter]                              @ alexgrover
+// REMA     [Regularized Exponential Moving Average]                @ everget
+// REVMA    [Reverse Exponential Moving Average]                    @ everget
+// RMA      [Wilder Relative Smoothing Moving Average]              @ TradingView
+// RMF      [Recursive Median Filter]                               @ everget
+// RMTA     [Recursive Moving Trend Average]                        @ everget
+// SMA      [Simple (Arithmetic) Moving Average]                    @ TradingView
+// SSB      [Senkou Span B]                                         @ TradingView
+// SSF      [Super Smoother Filter Pole 2]                          @ everget
+// TILL     [Tilson (3rd Degree) Moving Average]                    @ Tim Tilson
+// TMA      [Triangular Moving Average]                             @ everget
+// TRAMA    [Trend Regularity Adaptive Moving Average]              @ LuxAlgo
+// TSE      [Trend Step - Efficient]                                @ alexgrover
+// VAMA     [Volatility Adjusted Moving Average]                    @ Duyck
+// VAR      [Variable Index Dynamic Adaptive Moving Average]        @ Tushar S. Chande
+// VHMA     [Vertical Horizontal Moving Average]                    @ alexgrover
+// VMA      [Variable Moving Average]                               @ LazyBear
+// VWMA     [Volume Weighted Moving Average]                        @ Tradingview
+// WMA      [Weighted Moving Average]                               @ Tradingview
+// ZLEMA    [Zero Lag Exponential Moving Average]                   @ everget
+
+//@version=6
+library("lib_moving_averages", overlay=true)
+
+// ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+// ║                                             MOVING AVERAGE FUNCTIONS                                              ║
+// ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+// AFF [Adaptive Frequency Filter] - @dg_factor
+export f_aff(series float data, series float delta) =>
+    a = ta.sma(high / low, 9)
+    b = ta.max(a)
+    c = ta.min(a)
+    d = delta * (a - c) / (b - c)
+    e = nz(int(1 + 99 * (a - c) / (b - c)), 1)
+    f = 2 / (e + 1)
+    g = ta.sma(data, e)
+    var float aff = na
+    aff := na(aff[1]) ? g : d * f * (data - nz(aff[1])) + nz(aff[1])
+//
+
+// AHMA [Ahrens Moving Average] - @everget
+export f_ahma(series float data, simple int length) =>
+    a = 1 / length
+    ahma = 0.0
+    ahma := a * (data - math.avg(nz(ahma[1]), nz(ahma[length]))) + nz(ahma[1])
+//
+
+// AUF [Auto Filter] - @everget
+export f_auf(series float data, simple int length) =>
+    a = ta.sma(data, 14)
+    b = ta.stdev(data, length)
+    c = float(na)
+    c := data > nz(c[1], a) + b ? data : data < nz(c[1], a) - b ? data : c[1]
+    d = ta.sma(c, length)
+    e = ta.sma(data, length)
+    f = ta.stdev(c, length)
+    g = ta.stdev(data, length)
+    h = ta.correlation(c, data, length)
+    i = h * (g / f)
+    j = e - i * d
+    auf = c * i + j
+//
+
+// BAMA [Bryant Adaptive Moving Average] - @everget
+export f_bama(series float data, simple int length, series float trend) =>
+    len = int(9)
+    a = math.abs(ta.change(data, len))
+    b = math.sum(math.abs(ta.change(data)), len)
+    c = b != 0 ? a / b : 0
+    d = math.pow(c - (2 * c - 1) / 2 * (1 - trend) + 0.5, 2)
+    e = int(200)
+    f = (length - d + 1) / d
+    f := f > e ? e : f
+    g = 2 / (f + 1)
+    bama = 0.0  // bama = data
+    bama := g * (data - nz(bama[1])) + nz(bama[1])
+//
+
+// BWF [Butterworth Filter Pole 3] - @everget
+export f_bwf(series float data, simple int length) =>
+    a = math.exp(-math.pi / length)
+    b = 2 * a * math.cos(1.738 * math.pi / length)
+    c = math.pow(a, 2)
+    bwf = 0.0
+    bwf := (b + c) * nz(bwf[1]) - (c + b * c) * nz(bwf[2]) + math.pow(c, 2) * nz(bwf[3]) + 
+     ((1 - b + c) * (1 - c) / 8) * (data + 3 * nz(data[1]) + 3 * nz(data[2]) + nz(data[3]))
+//
+
+// CTI [Coral Trend Indicator] - @LazyBear
+export f_cti(series float data, simple int length, series float constant) =>
+    n = constant
+    a = (length - 1) / 2 + 1
+    b = 2 / (a + 1.0)
+    c = 1 - b
+    d = 3.0 * (n * n + n * n * n)
+    e = -3.0 * (2.0 * n * n + n + n * n * n)
+    f = 3.0 * n + 1.0 + n * n * n + 3.0 * n * n
+    g = 0.0, h = 0.0, i = 0.0, j = 0.0, k = 0.0, l = 0.0
+    g := b * data + c * nz(g[1])
+    h := b * g    + c * nz(h[1])
+    i := b * h    + c * nz(i[1])
+    j := b * i    + c * nz(j[1])
+    k := b * j    + c * nz(k[1])
+    l := b * k    + c * nz(l[1])
+    cti = -n * n * n * l + d * k + e * j + f * i
+//
+
+// DEC [Ehlers Simple Decycler] - @everget
+export f_dec(series float data, simple int length) =>
+    a = 2 * math.pi / (length * math.sqrt(2))
+    b = 0.0
+    b := math.cos(a) != 0 ? (math.cos(a) + math.sin(a) - 1) / math.cos(a) : nz(b[1])
+    c = 0.0
+    c := math.pow(1 - b / 2, 2) * (data - 2 * nz(data[1]) + nz(data[2])) + 2 * (1 - b) * nz(c[1]) - math.pow(1 - b, 2) * nz(c[2])
+    dec = 0.0
+    dec := data - c 
+//
+
+// DEVS [Deviation Scaled Moving Average] - @everget
+export f_devs(series float data, simple int length) =>
+    a = data - nz(data[2])
+    b = (a + a[1]) / 2  // b ──> x = ssf(b, length_2)
+    c = ta.stdev(b, length)
+    d = c != 0 ? b / c : 0
+    e = 5 * math.abs(d) / length
+    devs = 0.0
+    devs := e * (data - nz(devs[1])) + nz(devs[1])
+//
+
+// EDMA [Exponentially Deviating Moving Average] - @MightyZinger
+export f_edma(series float data, simple int length) =>
+    var float a = na
+    var float b = na
+    c = int(length / 1.5)
+    a := na(a[1]) ? data : data >= a[1] ? data : a[1] + (data - a[1]) * (1. / (length + 1))
+    b := na(b[1]) ? a : data <= b[1] ? a : b[1] + (data - b[1]) * (1. / (length + 1))
+    edma = ta.wma(2 * ta.wma(b, c / 2) - ta.wma(b, c), math.round(math.sqrt(c)))
+//
+
+// EMA [Exponential Moving Average] - @TradingView
+export f_ema(series float data, simple int length) =>
+    k = 2 / (length + 1)
+    ema = 0.0
+    ema := k * (data - nz(ema[1])) + nz(ema[1])
+//
+
+// EMAC [Exponential Moving Average - Coefficient] - @dg_factor
+export f_emac(series float data, series float multiplier) =>
+    emac = 0.0
+    emac := na(emac[1]) ? data : multiplier * (data - nz(emac[1])) + nz(emac[1])
+//
+
+// EVMA [Elastic Volume Weighted Moving Average] - @everget
+export f_evma(series float data, simple int length) =>
+    a = math.sum(volume, length)
+    evma = 0.0
+    evma := nz(evma[1]) * (a - volume) / a + volume * data / a
+//
+
+// FRAMA [Fractal Adaptive Moving Average] - @everget
+export f_frama(series float data, simple int length) =>
+    a = length == 1 ? 1 : math.floor(length / 2)
+    b = ta.highest(a)
+    c = ta.lowest(a)
+    d = (b - c) / a
+    e = (b[a] - c[a]) / a
+    f = (ta.highest(length) - ta.lowest(length)) / length
+    g = (math.log(d + e) - math.log(f)) / math.log(2)
+    h = math.exp(-4.6 * (g - 1))
+    frama = 0.0
+    frama := h * data + (1 - h) * nz(frama[1])
+//
+
+// FX [Fibonacci X Level - Linear] - @dg_factor
+export f_fib_lin(simple int length, series float multiplier) =>
+    a = ta.highest(length)
+    b = ta.lowest(length)
+    c = math.abs(ta.highestbars(length))
+    d = math.abs(ta.lowestbars(length))
+    e = c > d
+    f = e ? a : b
+    g = e ? b : a
+    h = a - b
+    linx = e ? b + h * multiplier : a - h * multiplier
+//
+
+// FX [Fibonacci X Level - Logarithmic] - @dg_factor
+export f_fib_log(simple int length, series float multiplier) =>
+    a = ta.highest(length)
+    b = ta.lowest(length)
+    c = math.abs(ta.highestbars(length))
+    d = math.abs(ta.lowestbars(length))
+    e = c > d
+    f = e ? a : b
+    g = e ? b : a
+    logx = g * math.exp(math.log(f / g) * multiplier)
+//
+
+// GAUS [Gaussian Filter - Pole 2] - @everget
+export f_gaus(series float data, simple int length) =>
+    a = (1 - math.cos(2 * math.pi / length)) / (math.sqrt(2) - 1)
+    b = -a + math.sqrt(math.pow(a, 2) + 2 * a)
+    gaus = 0.0
+    gaus := math.pow(b, 2) * data + 2 * (1 - b) * nz(gaus[1]) - math.pow(1 - b, 2) * nz(gaus[2])
+//
+
+// GHL [Gann High Low] - @ChrisMoody
+export f_ghl(series float data, simple int length_1, simple int length_2) =>
+    a = data > nz(ta.sma(high, length_1))[1] ? 1 : data < nz(ta.sma(low, length_2))[1] ? -1 : 0
+    b = ta.valuewhen(a != 0, a, 0)
+    c = ta.sma(high, length_1)
+    d = ta.sma(low, length_2)
+    ghl = b == -1 ? c : d
+//
+
+// GMA [Geometric Moving Average] - @TradingView 
+export f_gma(series float data, simple int length) =>
+    a = ta.cum(math.log(data))
+    gma = math.exp(ta.mom(a, length) / length)  // gma = math.exp(ta.sma(math.log(data), length))
+//
+
+// HMA [Harmonic Moving Average] - @TradingView 
+export f_hma(series float data, simple int length) =>
+    a = ta.sma(data, length)
+    b = math.exp(ta.sma(math.log(data), length)) // f_gma(data, length)
+    c = math.pow(b, 2)
+    hma = c / a
+//
+
+// HEMA [Holt Exponential Moving Average] - @everget
+export f_hema(series float data, simple int length_1, simple int length_2) =>
+    a = 2 / (length_1 + 1)
+    b = 2 / (length_2 + 1)
+    c = 0.0
+    hema = 0.0
+    hema := (1 - a) * (nz(hema[1]) + nz(c[1], data)) + a * data
+    c := (1 - b) * nz(c[1]) + b * (hema - nz(hema[1]))
+    hema
+//
+
+// HSMA [Hirashima Sugita Moving Average] - @alexgrover
+export f_hsma(series float data, simple int length) =>
+    a = ta.ema(data, length)
+    b = data - a
+    c = ta.linreg(b, length, 0)
+    d = a + c
+    e = data - d
+    f = ta.linreg(e, length, 0)
+    hsma = a + c + ta.change(f)
+//
+
+// HULL [Hull Moving Average] - @Tradingview
+export f_hull(series float data, simple int length) =>
+    a = length == 1 ? 1 : length / 2
+    hull = ta.wma(2 * ta.wma(data, a) - ta.wma(data, length), math.round(math.sqrt(length)))
+//
+
+// IIRF [Infinite Impulse Response Filter] - @everget
+export f_iirf(series float data, simple int length) =>
+    a = 2 / (length + 1)
+    b = math.round(1 / a - 1)
+    iirf = 0.0
+    iirf := a * (2 * data - data[b] - nz(iirf[1])) + nz(iirf[1])
+//
+
+// JMA [Jurik Moving Average] - @everget
+export f_jma(series float data, simple int length, series float power) =>
+    phase = 50.0  // input.integer
+    a = phase < -100 ? 0.5 : phase > 100 ? 2.5 : phase / 100 + 1.5
+    b = 0.45 * (length - 1) / (0.45 * (length - 1) + 2)
+    c = math.pow(b, power)
+    jma = 0.0
+    d = 0.0
+    d := (1 - c) * data + c * nz(d[1])
+    e = 0.0
+    e := (data - d) * (1 - b) + b * nz(e[1])
+    f = 0.0
+    f := (d + a * e - nz(jma[1])) * math.pow(1 - c, 2) + math.pow(c, 2) * nz(f[1])
+    jma := f + nz(jma[1])
+//
+
+// KAMA & & AAMA [Kaufman Adaptive Moving Average] & [Apirine Adaptive Moving Average] - @everget
+export f_kama(series float data, simple int length, series float power) =>
+    a = math.abs(ta.change(data, length))
+    b = math.sum(math.abs(ta.change(data)), length)
+    c = b != 0 ? a / b : 0
+    d = math.pow(c, power)
+    kama = 0.0
+    kama := d * (data - nz(kama[1])) + nz(kama[1])
+//
+
+// LAG [Laguerre Filter] - @everget
+export f_lag(series float data, series float alpha) =>
+    a = 1 - alpha
+    b = 0.0, c = 0.0, d = 0.0, e = 0.0 
+    b := (1 - a) * data + a * nz(b[1])   
+    c := -a * b + nz(b[1]) + a * nz(c[1]) 
+    d := -a * c + nz(c[1]) + a * nz(d[1]) 
+    e := -a * d + nz(d[1]) + a * nz(e[1]) 
+    lag = (b + 2 * c + 2 * d + e) / 6
+//
+
+// LRL [Linear Regression Line] [LRL = LSMA = linreg(data, length, 0)] - @TradingView
+export f_lrl(series float data, simple int length) =>
+    a = bar_index
+    b = ta.sma(a, length)
+    c = ta.sma(data, length)
+    d = ta.stdev(a, length)
+    e = ta.stdev(data, length)
+    f = ta.correlation(a, data, length)
+    g = f * (e / d)
+    h = c - g * b  
+    lrl = a * g + h
+//
+
+// MAVW [Mavilim Weighted Moving Average] - @KivancOzbilgic
+export f_mavw(series float data, simple int length_1, simple int length_2) =>
+    a = length_1 + length_2
+    b = length_2 + a
+    c = a + b
+    d = b + c
+    e = ta.wma(data, length_1)
+    f = ta.wma(e, length_2)
+    g = ta.wma(f, a)
+    h = ta.wma(g, b)
+    i = ta.wma(h, c)
+    mavw = ta.wma(i, d)
+//
+
+// MCGD [McGinley Dynamic Moving Average] - @Tradingview
+export f_mcgd(series float data, simple int length) =>
+    a = ta.ema(data, length)
+    mcgd = 0.0
+    mcgd := na(mcgd[1]) ? a : mcgd[1] + (data - mcgd[1]) / (length * math.pow(data / mcgd[1], 4))
+//
+
+// MID [Median Moving Average] - @TradingView
+export f_mid(series float data, simple int length) => 
+    mid = ta.percentile_nearest_rank(data, length, 50)
+//
+
+// PKF [Parametric Kalman Filter] - @alexgrover
+export f_pkf(series float data, simple int length) =>
+    a = 0.0
+    b = 0.0
+    c = 0.0
+    pkf = 0.0
+    d = math.abs(ta.change(data))
+    a := (1 - c) * d
+    b := math.abs(nz(pkf[length], data[1]) - data)
+    c := nz(a[1], d) / (nz(a[1], d) + b)
+    pkf := c * (data - nz(pkf[1], data[1])) + nz(pkf[1], data[1])
+//
+
+// REMA [Regularized Exponential Moving Average] - @everget
+export f_rema(series float data, simple int length, series float lambda) =>
+    alpha = 2 / (length + 1)
+    rema = 0.0
+    rema := (alpha * (data - nz(rema[1])) + nz(rema[1]) + lambda * (2 * nz(rema[1]) - nz(rema[2]))) / (lambda + 1)
+//
+
+// REVMA [Reverse Exponential Moving Average] - @everget
+export f_revma(series float data, simple int length) =>
+    a = length * 0.01
+    b = 1 - a
+    c = 0.0
+    c := a * data + b * nz(c[1])
+    d = b * c + nz(c[1])
+    e = math.pow(b, 2) * d + nz(d[1])
+    f = math.pow(b, 4) * e + nz(e[1])
+    g = math.pow(b, 8) * f + nz(f[1])
+    h = math.pow(b, 16) * g + nz(g[1])
+    i = math.pow(b, 32) * h + nz(h[1])
+    j = math.pow(b, 64) * i + nz(i[1])
+    k = math.pow(b, 128) * j + nz(j[1])
+    l = c - a * k
+    m = data - l
+    revma = ta.wma(m, length)
+//
+
+// RMA [Welles Wilder"s Smoothing Moving Average] [RMA = SMMA = WWMA] - @TradingView
+export f_rma(series float data, simple int length) =>
+    rma = 0.0
+    rma := nz(rma[1]) + (data - nz(rma[1])) / length
+//
+
+// RMF [Recursive Median Filter] - @everget
+export f_rmf(series float data, simple int length_1, simple int length_2) =>
+    a = ta.percentile_nearest_rank(data, length_1, 50)
+    b = 2 * math.pi / length_2
+    c = 0.0
+    c := math.cos(b) != 0 ? (math.cos(b) + math.sin(b) - 1) / math.cos(b) : nz(c[1])
+    rmf = 0.0
+    rmf :=  c * (a - nz(rmf[1])) + nz(rmf[1])
+//
+
+// RMTA [Recursive Moving Trend Average]
+export f_rmta(series float data, simple int length) =>
+    a = 2 / (length + 1)
+    b = 0.0
+    b := (1 - a) * nz(b[1], data) + data
+    rmta = 0.0
+    rmta := (1 - a) * nz(rmta[1], data) + a * (data + b - nz(b[1]))
+//
+
+// SMA [Simple Moving Average] - @TradingView
+export f_sma(series float data, simple int length) => 
+    sma = math.sum(data, length) / length
+//
+
+// SSB [Senkou Span B] - @TradingView
+export f_ssb(simple int length) => 
+    ssb = math.avg(ta.lowest(length), ta.highest(length))[length / 2]
+//
+
+// SSF [Super Smoother Filter Pole 2] - @everget
+export f_ssf(series float data, simple int length) =>
+    a = 2 * math.cos(45 * math.pi / 180) * math.pi / length
+    b = math.exp(-a)
+    c = -math.pow(b, 2)  // coef 3
+    d = 2 * b * math.cos(a)  // coef 2
+    e = 1 - d - c  // coef 1
+    ssf = 0.0
+    ssf := e * data + d * nz(ssf[1]) + c * nz(ssf[2]) 
+//
+
+// TILL [Tilson (3rd Degree) Moving Average] - Tim Tilson (re-designed by @dg_factor)
+// Diğer dereceler için özgün olarak geliştirdiğim versiyon : 
+// https://x.com/dg_factor/status/1668998618987081729
+export f_till(series float data, simple int length, series float factor) =>
+    a = factor + 1
+    b = ta.ema(data, length)
+    c = ta.ema(b, length)
+    d = ta.ema(c, length)
+    e = ta.ema(d, length)
+    f = ta.ema(e, length)
+    g = ta.ema(f, length)
+    h = -1 * 1 * math.pow(factor, 3) * math.pow(a, 0)
+    i =  1 * 3 * math.pow(factor, 2) * math.pow(a, 1)
+    j = -1 * 3 * math.pow(factor, 1) * math.pow(a, 2)
+    k =  1 * 1 * math.pow(factor, 0) * math.pow(a, 3)
+    till = h * g + i * f + j * e + k * d
+//
+
+// TMA [Triangular Moving Average] - @everget
+export f_tma(series float data, simple int length) =>
+    tma = ta.sma(ta.sma(data, math.ceil(length / 2)), math.floor(length / 2) + 1)
+//
+
+// TRAMA [Trend Regularity Adaptive Moving Average] - @LuxAlgo
+export f_trama(series float data, simple int length) =>
+    a = math.max(math.sign(ta.change(ta.highest(length))), 0)
+    b = math.max(math.sign(ta.change(ta.lowest(length)) * -1), 0)
+    c = math.pow(ta.sma(a > 0 or b > 0 ? 1 : 0, length), 2)
+    var float trama = na
+    trama := na(trama[1]) ? data : nz(trama[1]) + c * (data - nz(trama[1]))
+//
+
+// TSE [Trend Step - Efficient] - @alexgrover
+export f_tse(series float data, simple int length) =>
+    fast = int(length / 2)
+    slow = int(length * 2)
+    a = math.abs(ta.change(data, length)) / math.sum(math.abs(ta.change(data)), length)
+    b = a * ta.stdev(data * 2, fast) + (1 - a) * ta.stdev(data * 2, slow)
+    tse = 0.0
+    tse := data > nz(tse[1], data) + b ? data : data < nz(tse[1], data) - b ? data : nz(tse[1], data)
+//
+
+// VAMA [Volatility Adjusted Moving Average] - @Duyck
+export f_vama(series float data, simple int length) =>
+    a = length * 3  // length_2
+    b = ta.ema(data, length)
+    c = data - b
+    d = ta.highest(c, a)
+    e = ta.lowest(c, a)
+    vama = b + math.avg(d, e)
+//
+
+// VAR / VIDYA [Variable Index Dynamic Adaptive Moving Average] - Tushar S. Chande (re-designed by @dg_factor)
+export f_var(series float data, simple int length) =>
+    a = math.abs(ta.change(data, 9))
+    b = math.sum(math.abs(ta.change(data)), 9)
+    c = b != 0 ? a / b : 0
+    d = 2 / (length + 1)
+    e = ta.sma(data, length)
+    vidya = 0.0 
+    vidya := length == 1 ? data : na(vidya[1]) ? e : 
+     c * d * (data - nz(vidya[1])) + nz(vidya[1])
+//
+
+// VHMA [Vertical Horizontal Moving Average] - @alexgrover
+export f_vhma(series float data, simple int length) =>
+    a = ta.highest(data, length) - ta.lowest(data, length)
+    b = a / math.sum(math.abs(ta.change(data)), length)
+    c = math.pow(b, 2)
+    vhma = 0.0
+    vhma := c * (data - nz(vhma[1])) + nz(vhma[1])
+//
+
+// VMA [VARIABLE MOVING AVERAGE] - @LazyBear
+export f_vma(series float data, simple int length) =>
+    a = 1 / length
+    b = math.max(data - data[1], 0)
+    c = math.max(data[1] - data, 0)
+    d = 0.0
+    d := (1 - a) * nz(d[1]) + a * b
+    e = 0.0
+    e := (1 - a) * nz(e[1]) + a * c
+    f = d + e
+    g = d / f
+    h = e / f
+    i = 0.0
+    i := (1 - a) * nz(i[1]) + a * g
+    j = 0.0
+    j := (1 - a) * nz(j[1]) + a * h 
+    k = math.abs(i - j)
+    l = i + j
+    m = 0.0
+    m := (1 - a) * nz(m[1]) + a * k / l
+    n = ta.highest(m, length)
+    o = ta.lowest(m, length)
+    p = n - o
+    q = (m - o) / p
+    vma = 0.0
+    vma := (1 - a * q) * nz(vma[1]) + a * q * data
+//
+
+// VWMA [Volume Weighted Moving Average] - @Tradingview
+export f_vwma(series float data, simple int length) => 
+    vwma = math.sum(data * volume, length) / math.sum(volume, length)
+//
+
+// WMA [Weighted Moving Average] - @Tradingview
+export f_wma(series float data, simple int length) =>
+    a = ta.cum(data)
+    b = ta.change(ta.cum(a), length)
+    wma = (length * a - b[1]) / (length * (length + 1) / 2)
+//
+
+// ZLEMA [Zero Lag Exponential Moving Average] - @everget
+export f_zlma(series float data, simple int length) =>
+    a = int((length - 1) / 2)
+    b = 2 * data - data[a]
+    zlma = ta.ema(b, length)
+//
+
+// Bitti :)
+plotshape(barstate.isfirst, "@ dg_factor", shape.flag, location.bottom, #00000000, precision=1, editable=false)
