@@ -1,0 +1,631 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor [20.06.2022]
+
+// You are free to: Share, adapt, remix, transform and build upon the material.
+// Attribution Required: Credit must be given to original developers listed below.
+// Special recognition to the Pine Script community, TradingView platform and all original algorithm developers who made their work available.
+
+// TITLE        INDICATOR                                           RANGE               AUTHOR
+// A/D          [Accumulation / Distribution]                       [-∞ : ∞]            Marc Chaikin
+// ADX          [Average Directional Movement Index]                [0 : 100]           J. Welles Wilder
+// ARO          [Aroon] [± Spread]                                  [0 : 100]           Tushar Chande
+// ASO          [Average Sentiment Oscillator] [± Spread]           [-100 : 100]        Benjamin Joshua Nash (@ KivancOzbilgic)
+// ATR          [Average True Range]                                [0 : ∞]             J. Welles Wilder
+// BBW          [Bollinger Bandwidth]                               [0 : ∞]             John Bollinger
+// %B           [Bollinger Percent]                                 [0 : 100]           John Bollinger
+// CBH          [Cumulative Bar Height]                             [-∞ : ∞]            dg_factor
+// CCI          [Commodity Channel Index]                           [-200 : 200]        Donald Lambert
+// CGO          [Center of Gravity Oscillator]                      [0 : ∞]             John Ehlers (@ KivancOzbilgic)
+// CMF          [Chaikin Money Flow]                                [-1 : 1]            Marc Chaikin
+// CMO          [Chande Momentum Oscillator]                        [-100 : 100]        Tushar Chande
+// CVD          [Cumulative Delta Volume]                           [0 : ∞]             (@ NoveltyTrade)
+// DEMARK       [Demarker Indicator]                                [0 : 1]             J. Welles Wilder
+// DC           [Determination Coefficient]                         [0 : 1]             (@ dg_factor)
+// DMI          [Demand Index]                                      [-1 : 1]            James Sibbet (@ maurinho)
+// EĞİM         [Eğim - High & low]                                 [-∞ : ∞]            (@ dg_factor)
+// EĞİM θ       [Eğim Açısı - High & Low]                           [-90 : 90]          (@ dg_factor)
+// FO           [Forecast Oscillator]                               [-100 : 100]        Tushar Chande (@ KivancOzbilgic)
+// FT           [Fisher Transform]                                  [-∞ : ∞]            John Ehlers (@ HPotter)
+// III          [Intraday Intensity Index]                          [-∞ : ∞]            Marc Chaikin
+// IIIP         [Intraday Intensity Index - Percent]                [-100 : 100]        John Bollinger
+// IMI          [Intraday Momentum Index]                           [0 : 100]           Tushar Chande
+// IFT-CCI      [Inverse Fisher transform on CCI]                   [-1 : 1]            John Ehlers (@ KivancOzbilgic)
+// IFT-STO      [Inverse Fisher transform on STOCH] [Smoothed]      [-1 : 1]            John Ehlers (@ KivancOzbilgic)
+// KAIRI        [Kairi Relative Index]                              [-∞ : ∞]            (@ everget)
+// KDJ          [Kdj Indicator]                                     [0 : 100]           Metatrader
+// KO           [Karobein Oscillator]                               [0 : 1]             (@ alexgrover)
+// MACD         [Moving Average Convergence Divergence]             [-∞ : ∞]            Gerald Appel
+// MACD-V       [Moving Average Convergence Divergence Volume]      [-∞ : ∞]            Gerald Appel
+// MASS         [Mass Index]                                        [0 : 100]           Donald Dorsey (@ everget)
+// MFI          [Money Flow Index]                                  [0 : 100]           Gene Quong & Avrum Soudack
+// OBV          [On Balance Volume]                                 [-∞ : ∞]            Joseph Granville
+// OBVO         [On Balance Volume Oscillator]                      [-100 : 100]        David Markstein
+// PDF          [Probability Density Function]                      [0 : ∞]             (@ dg_factor)
+// QQE-S        [Quantitative Qualitative Estimation - Slow]        [0 : 100]           Rafał Wojda (@ KivancOzbilgic)
+// RMI          [Relative Momentum Index]                           [0 : 100]           Roger Altman (@ everget)
+// ROC          [Rate Of Change]                                    [-100 : ∞]          (@ TradingView)
+// RSI          [Relative Strength Index]                           [0 : 100]           J. Welles Wilder
+// RSO          [Relative Strength Oscillator]                      [-∞ : ∞]            J. Welles Wilder
+// RTR          [Relative True Range]                               [0 : ∞]             Anıl Özekşi (@ dg_factor)
+// RVI          [Relative Vigor Index]                              [-1 : 1]            Donald Dorsey
+// SHO          [Simple Harmonic Oscillator]                        [-100 : 100]        John Ehlers (@ UnknownUnicorn170838)
+// SMI          [Stochastic Momentum Index]                         [-100 : 100]        William Blau
+// STOCH        [Stochastic Oscillator]                             [0 : 100]           George C. Lane
+// TCF          [Trend Continuation Factor]                         [-∞ : ∞]            William Blau (@ everget)
+// TRIX         [Triple Exponential Momentum Index]                 [-100 : 100]        Jack Hutson
+// TSI          [True Strength Index]                               [-100 : 100]        William Blau
+// ULT          [Ultimate Oscillator]                               [0 : 100]           Larry Williams
+// VHF          [Vertical Horizontal Filter]                        [0 : 1]             Adam White (@ everget)
+// VI+          [Positive Volume Index]                             [-∞ : ∞]            Norman Fosback (@ everget)
+// VI-          [Negative Volume Index]                             [-∞ : ∞]            Norman Fosback (@ everget)
+// VOL          [Volume]                                            [0 : ∞]             TradingView            
+// VTX          [Vortex] [± Spread]                                 [-1 : 1]            Etienne Botes & Douglas Siepman
+// WPR          [Williams Percent Range]                            [-100 : 0]          Larry Williams
+// WPO          [Wave Period Oscillator]                            [-2 : 2]            Akram El Sherbini (@ KivancOzbilgic)
+// WTO          [Wave Trend Oscillator]                             [-100 : 100]        (@ Lazy Bear)
+// ZSCORE       [Z-Score]                                           [-3 : 3]            (@ dg_factor)
+
+//@version=6
+library("lib_oscillator", overlay=false)
+
+// ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+// ║                                          Moving Average & OTT Functions                                           ║
+// ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+// Variable Index Dynamic Adaptive Moving Average - Tushar Chande - {Ott, Macd, Macd-V, Rtr}
+export f_var(series float data, simple int length) =>
+    a = ta.sma(data, length)
+    b = math.abs(ta.change(data, 9))                                                          
+    c = math.sum(math.abs(ta.change(data)), 9)                                                
+    d = c != 0 ? b / c : 0                                                                    
+    e = 2 / (length + 1)
+    r = 0.0, r := length == 1 ? data : na(r[1]) ? a : d * e * (data - nz(r[1])) + nz(r[1])    
+//
+
+// Optimized Trend Tracker - Anıl Özekşi
+export f_ott(series float data, series float multiplier) =>
+    a = multiplier / 100
+    b = data * a, c = data - b, d = data + b
+    c := c > nz(c[1]) or data < nz(c[1]) ? c : nz(c[1])
+    d := d < nz(d[1]) or data > nz(d[1]) ? d : nz(d[1])
+    e = 0.0, e := data > nz(e[1]) ? c : data < nz(e[1]) ? d : nz(e[1])    // MOST - by Anıl Özekşi :)
+    f = 1 + a / 2
+    g = 1 - a / 2
+    h = data > e ? e * f : e * g
+    r = nz(h[2])
+//
+
+// ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+// ║                                                    OSCILLATORS                                                    ║
+// ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+// A/D [Accumulation/Distribution] - Marc Chaikin
+export f_ad() =>
+    a = close == high and close == low or high == low ? 0 : (2 * close - low - high) / (high - low) * volume
+    ad = ta.cum(a)
+    // cmf = math.sum(a, length) / math.sum(volume, length)
+//
+
+// ADX [Average Directional Index] - (Bonus : ADXR & DMO) - J. Welles Wilder
+export f_adx(simple int length) =>
+    a = ta.change(high)
+    b = -ta.change(low)
+    c = na(a) ? na : a > b and a > 0 ? a : 0
+    d = na(b) ? na : b > a and b > 0 ? b : 0
+    e = ta.atr(length)
+    f = fixnan(100 * ta.rma(c, length) / e)
+    g = fixnan(100 * ta.rma(d, length) / e)
+    h = f + g
+    i = f - g                               // DMO
+    j = math.abs(i) / (h == 0 ? 1 : h)
+    adx = 100 * ta.rma(j, length)
+    // adxr = (adx + adx[length_2]) / 2           // ADXR (length_2 giridisi gerektirir)
+//
+
+// ARO [Aroon] [± Spread] - Tushar Chande
+export f_aroon(simple int length) =>
+    a = 100 * (ta.highestbars(high, length) + length) / length
+    b = 100 * (ta.lowestbars(low, length) + length) / length
+    aroon = a - b
+//
+
+// ASO [Average Sentiment Oscillator] [± Spread] - Benjamin Joshua Nash (@ KivancOzbilgic)
+export f_aso(simple int length) =>
+    a = high - low
+    b = a == 0 ? 1 : a
+    c = (close - low + high - open) / 2 * 100 / b
+    d = (high - close + open - low) / 2 * 100 / b
+    e = ta.sma(c, length)
+    f = ta.sma(d, length)
+    aso = e - f
+//
+
+// ATR [Average True Range] - J. Welles Wilder
+export f_atr(simple int length) =>
+    a = na(high[1]) ? high - low : math.max(math.max(high - low, math.abs(high - close[1])), math.abs(low - close[1]))  // true range
+    atr = ta.rma(a, length)
+//
+
+// BBW [Bollinger Bandwidth] - John Bollinger
+export f_bbw(series float data, simple int length) =>
+    a = ta.stdev(data, length)
+    b = 2 * a
+    c = ta.sma(data, length)
+    d = c + b
+    e = c - b
+    bbw = (d - e) / c
+//
+
+// %B [Bollinger Percent] - John Bollinger
+export f_bbp(series float data, simple int length) =>
+    a = ta.stdev(data, length)
+    b = 2 * a
+    c = ta.sma(data, length)
+    d = c + b
+    e = c - b
+    bbp = (data - e) / (d - e) * 100
+//
+
+// CBH (Cumulative Bar Height) - dg_factor
+export f_cbh(simple int length) =>
+    a = math.sum(close < open ? math.abs(close - open) : 0, length)
+    b = math.sum(close > open ? math.abs(close - open) : 0, length)
+    c = math.sum(close < open ? 1 : 0, length)
+    d = math.sum(close > open ? 1 : 0, length)
+    r = (b / d) - (a / c)
+//
+
+// CCI [Commodity Channel Index] - Donald Lambert
+export f_cci(series float data, simple int length) =>
+    a = ta.sma(data, length)
+    cci = (data - a) / (0.015 * ta.dev(data, length))
+//
+
+// CGO [Center of Gravity Oscillator] - John Ehlers (@ KivancOzbilgic)
+export f_cgo(series float data, simple int length) =>
+    a = ta.wma(data, length) * length * (length + 1) / 2
+    b = math.sum(data, length)
+    cgo = a / b
+//
+
+// CMF [Chaikin Money Flow] - Marc Chaikin
+export f_cmf(simple int length) =>
+    a = close == high and close == low or high == low ? 0 : (2 * close - low - high) / (high - low) * volume
+    ad = ta.cum(a)
+    cmf = math.sum(a, length) / math.sum(volume, length)
+//
+
+// CMO [Chande Momentum Oscillator] - Tushar Chande
+export f_cmo(series float data, simple int length) =>
+    a = data > data[1] ? data - data[1] : 0
+    b = data < data[1] ? data[1] - data : 0
+    c = math.sum(a, length)
+    d = math.sum(b, length)
+    cmo = 100 * nz((c - d) / (c + d))
+//
+
+// Cumulative Delta Volume - (@ NoveltyTrade)
+export f_cvd() =>
+    _close = close    
+    _open  = open
+    _vol   = volume
+    a = 0.0, b = 0.0, c = 0.0, d = 0.0, e = 0.0
+    var f = 0.0
+    switch
+        _close > _open          => a += _vol
+        _close < _open          => b -= _vol
+        _close > nz(_close[1])  => a += _vol
+        _close < nz(_close[1])  => b -= _vol
+        nz(a[1]) > 0 => a += _vol
+        nz(b[1]) < 0 => b -= _vol
+    c += a
+    d += b
+    e := c + d
+    cvd = f + e
+    f += e
+    cvd
+//
+
+// DEMARK [Demarker Indicator] - J. Welles Wilder
+export f_demark(simple int length) =>
+    a = high > high[1] ? high - high[1] : 0
+    b = low < low[1] ? low[1] - low : 0
+    c = ta.sma(a, length)
+    d = ta.sma(b, length)
+    demark = c / (c + d)
+//
+
+// DC [Determination Coefficient] - (@ dg_factor)
+export f_dc(series float data, simple int length) =>
+    dc = math.pow(ta.correlation(ta.cum(1), data, length), 2)
+//
+
+// DMI [Demand Index] - James Sibbet (@ maurinho)
+export f_dmi(simple int length) =>
+    a = (close - open) / open
+    b = ta.percentile_nearest_rank(a, 1, 100)
+    c = high > high[2] ? high : high[2]
+    d = low < low[2] ? low : low[2]
+    e = c - d
+    f = ta.sma(e, 10)  // sma(e, length) 
+    g = f == 0 ? 3 * close : 3 * close / f
+    b := b * g
+    h = 1.0
+    i = 1.0
+    h := close > open ? volume : volume / b
+    i := close > open ? volume / b : volume
+    dmi = 0.0
+    dmi := math.abs(h) > math.abs(i) ? i / h : h / i
+    dmi := ta.ema(dmi, length)
+//
+
+// EĞİM [Eğim (High & Low)] - (@ dg_factor)
+export f_egim(simple int length) =>
+    a = low[length] < high
+    b = high[length] > low
+    c = a ? low[length] : b ? high[length] : na
+    d = a ? high : b ? low : na
+    egim = (d - c) / (bar_index - (bar_index - length))
+//
+
+// EĞİM θ [EĞİM AÇISI] - (@ dg_factor)
+export f_egim_teta(simple int length) =>
+    teta = math.atan(f_egim(length)) * 180 / math.pi
+//
+
+// FO [Forecast Oscillator] - Tushar Chande (@ KivancOzbilgic)
+export f_fo(series float data, simple int length) =>
+    a = ta.linreg(data, length, 0)
+    b = ta.linreg(data, length, 1)
+    c = 2 * a - b
+    fo = 100 * (data - c[1]) / data
+//
+
+// FT [Fisher Transform] - John Ehlers (@ HPotter)
+export f_ft(series float data, simple int length) =>
+    a = ta.highest(data, length)
+    b = ta.lowest(data, length)
+    c = 0.0
+    c := 0.33 * 2 * ((data - b) / (a - b) - 0.5) + 0.67 * nz(c[1])
+    d = c > 0.99 ? 0.999 : c < -0.99 ? -0.999 : c
+    ft = 0.0
+    ft := 0.5 * math.log((1 + d) / (1 - d)) + 0.5 * nz(ft[1])
+//
+
+// III [Intraday Intensity Index] - Marc Chaikin
+export f_iii(series float data, simple int length) =>
+    a = (2 * data - high - low) * volume
+    b = high != low ? high - low : 1
+    c = a / b
+    iii = math.sum(c, length)
+//
+
+// III [Intraday Intensity Index] - John Bollinger
+export f_iiip(series float data, simple int length) =>
+    iiip = f_iii(data, length) / math.sum(volume, length) * 100
+//
+
+// IMI [Intraday Momentum Index] - Tushar Chande
+export f_imi(series float data, simple int length) =>
+    a = data > open ? data - open : 0
+    b = data > open ? 0 : open - data
+    c = math.sum(a, length)
+    d = math.sum(b, length)
+    imi = 100 * c / (c + d)
+//
+
+// IFT-CCI [Inverse Fisher Transform on CCI] - John Ehlers (@ KivancOzbilgic)
+export f_ift_cci(series float data, simple int length) =>
+    filter = 9
+    a = ta.cci(data, length)
+    b = 0.1 * (a / 4)
+    c = ta.wma(b, filter)
+    ift_cci = (math.exp(2 * c) - 1) / (math.exp(2 * c) + 1)
+//
+
+// IFT-STO [Inverse Fisher Transform on STOCH (Smoothed)] - John Ehlers (@ KivancOzbilgic)
+export f_ift_sto(series float data, simple int length) =>
+    filter = 9
+    a = ta.stoch(data, ta.highest(data, length), ta.lowest(data, length), length)
+    b = 0.1 * (a - 50)
+    c = ta.wma(b, filter)
+    ift_stoch = (math.exp(2 * c) - 1) / (math.exp(2 * c) + 1)
+//
+
+// KAIRI RELATIVE INDEX [Kairi] - (@ everget)
+export f_kairi(series float data, simple int length) =>
+    a = ta.sma(data, length)
+    kairi = (data - a) / a * 100
+//
+
+// KDJ [Kdj Indicator] - Metatrader
+export f_kdj(series float data, simple int length, simple int length_2) =>
+    a = ta.stoch(data, high, low, length)
+    b = ta.rma(a, length_2)
+    c = ta.rma(b, length_2)
+    kdj = 3 * b - 2 * c
+//
+
+// KO [Karobein Oscillator] - (@ alexgrover)
+export f_ko(series float data, simple int length) =>
+    a = ta.ema(data, length)
+    b = ta.ema(a < a[1] ? a / a[1] : 0, length)
+    c = ta.ema(a > a[1] ? a / a[1] : 0, length)
+    d = a / a[1] / (a / a[1] + c)
+    ko = 2 * (a / a[1] / (a / a[1] + d * b)) - 1
+//
+
+// MACD [Moving Average Convergence Divergence] - Gerald Appel
+export f_macd(series float data, simple int length, simple int length_2) =>
+    a = f_var(data, length)
+    b = f_var(data, length_2)
+    macd_k = a - b
+//
+
+// MACD-V [Moving Average Convergence Divergence - Volume] - Gerald Appel
+export f_macdv(series float data, simple int length, simple int length_2) =>
+    a = f_var(volume * data, length) / f_var(volume, length)
+    b = f_var(volume * data, length_2) / f_var(volume, length_2)
+    macdv = a - b
+//
+
+// MASS [Mass Index] - Donald Dorsey (@ everget)
+export f_mass(simple int length) =>
+    a = high - low
+    mass = math.sum(ta.ema(a, 9) / ta.ema(ta.ema(a, 9), 9), length)
+//
+
+// MFI [Money Flow Index] - Gene Quong & Avrum Soudack
+export f_mfi(series float data, simple int length) =>
+    a = math.sum(volume * (ta.change(data) <= 0 ? 0 : data), length)
+    b = math.sum(volume * (ta.change(data) >= 0 ? 0 : data), length)
+    mfi = 100 - 100 / (1 + a / b)
+//
+
+// OBV [On Balance Volume] - Joe Granville
+export f_obv(series float data) =>
+    obv = ta.cum(math.sign(ta.change(data)) * volume)
+//
+
+// OBVO [On Balance Volume Oscillator] - David Markstein
+export f_obvo(series float data, simple int length) =>
+    obvo = math.sum(math.sign(ta.change(data)) * volume, length) 
+//
+
+// PDF [Probability Density Function] - (@ dg_factor)
+// f(x) = (1 / (σ√(2π))) * e^(-(x - μ)² / (2σ²)) | Gauss Function
+export f_pdf(series float data, simple int length) =>
+    a = ta.sma(data, length)
+    b = ta.stdev(close, length)
+    c = 1. / (b * math.sqrt(2 * math.pi))
+    d = math.pow(data - a, 2) / (2 * math.pow(b, 2))
+    e = math.pow(math.e, -d) // math.exp(-b)
+    r = c * e
+//
+
+// QQE-S [Quantitative Qualitative Estimation - Slow] - Rafał Wojda (@ KivancOzbilgic)
+export f_qqes(series float data, simple int length, simple int length_2) =>
+    a = ta.ema(ta.rsi(data, length), length_2)
+    b = math.abs(a - a[1])
+    c = 1 / length
+    d = 0.0
+    d := c * b + (1 - c) * nz(d[1])
+    e = 0.0
+    e := c * d + (1 - c) * nz(e[1])
+    f = ta.ema(ta.rsi(data, length), length_2)
+    g = f + e * 4.236
+    h = f - e * 4.236
+    i = 0.0
+    i := 
+     g < nz(i[1]) ? g : 
+     f > nz(i[1]) and f[1] < nz(i[1]) ? h : 
+     h > nz(i[1]) ? h : 
+     f < nz(i[1]) and f[1] > nz(i[1]) ? g : 
+     nz(i[1])
+    qqes = i    
+//
+
+// RMI [Relative Momentum Index] - Roger Altman (@ everget)
+export f_rmi(series float data, simple int length, simple int length_2) =>
+    a = ta.rma(math.max(ta.change(data, length_2), 0), length)
+    b = ta.rma(-math.min(ta.change(data, length_2), 0), length)
+    rmi = b == 0 ? 100 : a == 0 ? 0 : 100 - 100 / (1 + a / b)
+//
+
+// ROC [Rate Of Change] - (@ TradingView)
+export f_roc(series float data, simple int length) =>
+    roc = 100 * (data - data[length]) / data[length]
+//
+
+// RSI [Relative Strength Index] - J. Welles Wilder
+export f_rsi(series float data, simple int length) =>
+    a = ta.rma(math.max(ta.change(data), 0), length)
+    b = ta.rma(-math.min(ta.change(data), 0), length)
+    rsi = b == 0 ? 100 : a == 0 ? 0 : 100 - 100 / (1 + a / b)
+//
+
+// RSO [Relative Strength OscilLator (based on RSMA)] - J. Welles Wilder
+export f_rso(series float data, simple int length) =>
+    a = 70
+    b = 30
+    c = 2 * length - 1
+    d = ta.ema(math.max(data - data[1], 0), c)
+    e = ta.ema(math.max(data[1] - data, 0), c)
+    f = (length - 1) * (e * a / (100 - a) - d)
+    g = f >= 0 ? data + f : data + f * (100 - a) / a
+    h = (length - 1) * (e * b / (100 - b) - d)
+    i = h >= 0 ? data + h : data + h * (100 - b) / b
+    j = math.avg(g, i)
+    k = ta.lowest(10)
+    l = ta.highest(10)
+    rso = close - j > 0 ? k - j : l - j
+//
+
+// RTR [Relative True Range] - Anıl Özekşi (@ dg_factor)
+export f_rtr(series float data, simple int length, simple int length_2) =>
+    rtr = data / f_var(data / ta.atr(length), length_2)
+//
+
+// RVI [Relative Vigor Index] - Donald Dorsey
+export f_rvi(simple int length) =>
+    a = close - open
+    b = high - low
+    c = (a + 2 * a[1] + 2 * a[2] + a[3]) / 6
+    d = (b + 2 * b[1] + 2 * b[2] + b[3]) / 6
+    e = math.sum(c, length)
+    f = math.sum(d, length)
+    rvi = e / f
+    // signal = (rvi + 2 * rvi[1] + 2 * rvi[2] + rvi[3]) / 6
+//
+
+// SHO [Simple Harmonic Oscillator] - John Ehlers (@ UnknownUnicorn170838)
+export f_sho(series float data, simple int length) =>
+    a = data - data[1]
+    b = data[1] - data[2]
+    c = a - b
+    d = ta.ema(c, length)
+    e = 2 * math.pi * math.sqrt(math.abs(a / d))
+    f = data > data[1] ? e : e * -1
+    g = ta.ema(f, length)
+    h = ta.ema(e, length)
+    sho = g / h * 100
+//
+
+// SMI [Stochastic Momentum Index] - William Blau
+export f_smi(series float data, simple int length) =>
+    a = 1 // length_2
+    b = 1 // length_3
+    c = ta.lowest(low, length)
+    d = ta.highest(high, length)
+    e = data - (d + c) / 2
+    f = ta.ema(ta.ema(e, a), b)
+    g = d - c
+    h = ta.ema(ta.ema(g, a), b)
+    smi = h == 0 ? 0 : 200 * f / h
+//
+
+// STOCH [Stochastic Oscillator] - George C. Lane
+export f_sto(series float data, simple int length) =>
+    a = ta.highest(high, length)
+    b = ta.lowest(low, length)
+    sto = 100 * (data - b) / (a - b)
+//
+
+// TCF [Trend Continuation Factor] - William Blau (@ everget)
+export f_tcf(series float data, simple int length) =>
+    a = ta.change(data)
+    b = a > 0 ? a : 0
+    c = a > 0 ? 0 : -a
+    d = 0.0
+    d := b == 0 ? 0 : b + nz(d[1])
+    e = 0.0
+    e := c == 0 ? 0 : c + nz(e[1])
+    f = math.sum(b - e, length)
+    g = math.sum(c - d, length)
+    tcf = f - g
+//
+
+// TRIX [Triple Exponential Momentum Index] - Jack Hutson
+export f_trix(series float data, simple int length) =>
+    trix = 10000 * ta.change(ta.ema(ta.ema(ta.ema(math.log(data), length), length), length))
+//
+
+// TSI [True Strength Index] - William Blau
+export f_tsi(series float data, simple int length, simple int length_2) =>
+    a = ta.change(data)
+    b = ta.ema(ta.ema(a, length), length_2)
+    c = ta.ema(ta.ema(math.abs(a), length), length_2)
+    tsi = 100 * (b / c)
+//
+
+// ULT [Ultimate Oscillator] - Larry Williams
+export f_ult(series float data, simple int length) =>
+    a = math.round(length / 2)  // 14/2
+    b = length * 2  // 14*2
+    c = math.max(high, data[1])
+    d = math.min(low, data[1])
+    e = data - d
+    f = c - d
+    g = math.sum(e, a) / math.sum(f, a)
+    h = math.sum(e, length) / math.sum(f, length)
+    i = math.sum(e, b) / math.sum(f, b)
+    ult = 100 * (4 * g + 2 * h + i) / 7
+//
+
+// VHF [Vertical Horizontal Filter] - Adam White (@ everget)
+export f_vhf(series float data, simple int length) =>
+    a = ta.highest(data, length)
+    b = ta.lowest(data, length)
+    c = math.sum(math.abs(data - data[1]), length)
+    vhf = (a - b) / c
+//
+
+// VI+ [Volume Index Positive] - Norman Fosback (@ everget)
+export f_vip(series float data) =>
+    a = ta.roc(data, 1)
+    vip = 0.0
+    vip := volume > volume[1] ? nz(vip[1], 0) + a : nz(vip[1], 0)
+//
+
+// VI- [Volume Index Negative] - Norman Fosback (@ everget)
+export f_vin(series float data) =>
+    a = ta.roc(data, 1)
+    vin = 0.0
+    vin := volume < volume[1] ? nz(vin[1], 0) + a : nz(vin[1], 0)
+//
+
+// HACİM [Volume]
+export f_vol() => volume 
+
+// VTX [Vortex] - Etienne Botes & Douglas Siepman
+export f_vortex(simple int length) =>
+    a = math.sum(math.abs(high - low[1]), length)
+    b = math.sum(math.abs(low - high[1]), length)
+    c = math.sum(ta.atr(1), length)
+    d = a / c
+    e = b / c
+    vortex = d - e
+//
+
+// %R [Williams Percent Range] - Larry Williams
+export f_wpr(series float data, simple int length) =>    
+    a = ta.highest(high, length)
+    b = ta.lowest(low, length)
+    wpr = (a - data) / (a - b) * -100
+//
+
+// WPO [Wave Period Oscillator] - Akram El Sherbini (@ KivancOzbilgic)
+export f_wpo(series float data, simple int length) =>
+    a = 2 * math.pi / math.atan(data[1] / high / math.sqrt(1 - math.pow(data[1] / high, 2)))
+    b = ta.roc(data, 1) > 0 ? a : -a
+    wpo = ta.ema(b, length)
+//
+
+// WTO [Wave Trend Oscillator] - (@ Lazy Bear)
+export f_wto(simple int length, simple int length_2) =>
+    a = hlc3
+    b = ta.ema(a, length)
+    c = ta.ema(math.abs(a - b), length)
+    d = (a - b) / (0.015 * c)
+    wto = ta.ema(d, length_2)
+//
+
+// ZSCORE [Z-Score] - (@ dg_factor)
+export f_zscore(series float data, simple int length) =>
+    a = ta.sma(data, length)
+    b = ta.stdev(data, length)
+    zscore = (data - a) / b
+//
+
+// NOTLAR
+
+// Trend yönü belirtmeyen osilatörler : 
+//      ADX, ATR, BBW, PDF, VOL, VI-
+
+// Hesaplamalarındaki benzerlik nedeniyle farklı ölçekte aynı sonucu üreten (paralel) osilatörler :
+//      STOCH ≡ WPR ≡ SMI
+//      CCI ≡ %B
+//      CMO ≡ IMI
+
+// Bitti :)
+plotshape(barstate.isfirst, "@ dg_factor", shape.flag, location.bottom, #00000000, precision=1, editable=false)
