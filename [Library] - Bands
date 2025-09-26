@@ -1,0 +1,112 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © dg_factor
+
+// Band sistemleri, kaynağa olan mesafenin tanımlanma biçimine göre farklı isimler alırlar.
+// Kaynağa olan mesafe; yüzde ile tanımlanırsa "Envelope", atr ile tanımlanırsa "Keltner Channel", standart sapmayla tanımlanırsa "Bollinger Band" vb.
+
+//@version=6
+library("lib_bands", overlay=true)
+
+// Donchian Bands - Richard Donchian
+export f_donchian(series float data_high, series float data_low, simple int length) =>
+    ust = ta.highest(data_high, length)
+    alt = ta.lowest(data_low, length)
+    [ust, alt]
+//
+
+// Envelope Bands
+export f_envelope(series float data, simple int ma_length, series float multiplier) =>
+    ortalama = ta.sma(data, ma_length)
+    ust = ortalama * (1 + multiplier / 100.)  
+    alt = ortalama * (1 - multiplier / 100.) 
+    [ust, alt]
+//
+
+// Keltner Bands - Chester Keltner
+export f_keltner(series float data, simple int ma_length, simple int atr_length, series float multiplier) =>
+    ortalama = ta.sma(data, ma_length)
+    ust = ortalama + multiplier * ta.atr(atr_length)
+    alt = ortalama - multiplier * ta.atr(atr_length)
+    [ust, alt]
+//
+
+// Bollinger Bands - John Bollinger
+export f_bollinger(series float data, simple int length, series float multiplier) =>
+    ortalama = ta.sma(data, length)
+    ust = ortalama + multiplier * ta.stdev(close, length)
+    alt = ortalama - multiplier * ta.stdev(close, length)
+    [ust, alt]
+//
+
+// Linear Regression Bands
+export f_linreg(simple int length, series float multiplier) =>
+    a = bar_index
+    b = close
+    c = math.sum(a, length)
+    d = math.sum(b, length)
+    e = math.sum(a * b, length)
+    f = math.sum(a * a, length)
+    g = (length * e - c * d) / (length * f - c * c)
+    h = (d - g * c) / length
+    j = 0.0
+    for i = 0 to length - 1
+        j += math.pow(b[i] - (g * (a - i) + h), 2)
+        j
+    k = math.sqrt(j / length) * multiplier
+    l = ta.linreg(close, length, 0)
+    ust = l + k
+    alt = l - k
+    [ust, alt]
+//
+
+// Median Bands
+export f_median(simple int length, series float multiplier) =>
+    a = ta.median(close, length)
+    b = array.new_float(0)
+    for i = 0 to length - 1
+        array.push(b, math.abs(close[i] - a))
+    c = array.median(b)
+    d = 1.4826 * c   // Gaussian için tutarlı ölçek (Standart normal dağılımda %75’lik dilime karşılık gelen z-skoru)
+    ust = a + multiplier * d
+    alt = a - multiplier * d
+    [ust, alt]
+//
+
+// Parkinson Volatility Bands
+export f_parkinson(series float data, simple int length, series float multiplier) =>
+    ortalama = ta.sma(data, length)
+    a = 0.0
+    for i = 0 to length - 1
+        a += math.pow(math.log(high[i] / low[i]), 2)
+    b = math.sqrt(a / length) / (2 * math.sqrt(math.log(2)))
+    ust = ortalama * (1 + multiplier * b)
+    alt = ortalama * (1 - multiplier * b)
+    [ust, alt]
+//
+
+// // Theil–Sen Regression Channel (Robust Trend)
+// export f_theilsen(simple int length, series float multiplier) =>
+//     a = array.new_float(0)
+//     for i = 0 to length - 2
+//         for j = i + 1 to length - 1
+//             b = (close[i] - close[j]) / (i - j)
+//             array.push(a, b)
+//     c = array.median(a)
+//     d = array.new_float(0)
+//     for i = 0 to length - 1
+//         array.push(d, close[i] - c * i)
+//     e = array.median(d)
+//     f = c * (length - 1) + e
+//     g = array.new_float(0)
+//     for i = 0 to length - 1
+//         fit = c * i + e
+//         array.push(g, math.abs(close[i] - fit))
+//     h = array.median(g)
+//     ust = f + multiplier * h
+//     alt = f - multiplier * h
+//     [ust, alt]
+// //
+
+
+// Bitti :)
+plotshape(barstate.isfirst, "@ dg_factor", shape.flag, location.bottom, #00000000, precision=1, editable=false)
