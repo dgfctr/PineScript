@@ -1,8 +1,8 @@
 // This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // © dg_factor
 
-// Band sistemleri, kaynağa olan mesafenin tanımlanma biçimine göre farklı isimler alırlar.
-// Kaynağa olan mesafe; yüzde ile tanımlanırsa "Envelope", atr ile tanımlanırsa "Keltner Channel", standart sapmayla tanımlanırsa "Bollinger Band" vb.
+// EXECUTION :
+// https://www.tradingview.com/script/kPfdNHh6-Library-Bands/
 
 //@version=6
 library("lib_bands", overlay=true)
