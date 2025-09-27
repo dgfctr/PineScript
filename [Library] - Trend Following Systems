@@ -1,6 +1,9 @@
 // This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // © dg_factor
 
+// EXECUTION : 
+// https://www.tradingview.com/script/1y2yZX4v-Library-Trend-Following-Systems/
+
 //@version=6
 library("lib_trend_following_systems", overlay=true)
 
