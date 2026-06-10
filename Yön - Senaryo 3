@@ -35,7 +35,11 @@ plotshape(not tarih_araligi ? bool(na) : short_entry, "Short Entry", shape.trian
 
 // Yön Değişkeni
 yon = 0
-yon := not tarih_araligi ? 0 : long_entry ? 1 : short_entry ? -1 : long_exit or short_exit ? 0 : nz(yon[1])
+yon := not tarih_araligi ? 0 : 
+       long_entry ? 1 : 
+       short_entry ? -1 : 
+       (long_exit and nz(yon[1]) == 1) or (short_exit and nz(yon[1]) == -1) ? 0 : 
+       nz(yon[1])
 
 // Yön Çıktısı
 plot(yon, "Yön", display=display.data_window, precision=0)
