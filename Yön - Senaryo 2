@@ -29,9 +29,12 @@ plotshape(short_entry, "Short Entry", shape.triangledown, location.top,    #fb00
 
 // ╠═══════════════════════════════ İşlem Yönü ════════════════════════════════╣
 
-// Yön Değişkeni
 yon = 0
-yon := long_entry ? 1 : short_entry ? -1 : long_exit or short_exit ? 0 : nz(yon[1])
+yon := long_entry ? 1 : 
+       short_entry ? -1 : 
+       (long_exit and nz(yon[1]) == 1) ? 0 : 
+       (short_exit and nz(yon[1]) == -1) ? 0 : 
+       nz(yon[1])
 
 // Yön Çıktısı
 plot(yon, "Yön", display=display.data_window, precision=0)
