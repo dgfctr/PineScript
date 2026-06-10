@@ -40,8 +40,8 @@ yon :=
  not tarih_araligi ? 0 :
  (tercih != "Short" and long_entry)  ? 1  : 
  (tercih != "Long"  and short_entry) ? -1 : 
- long_exit or short_exit ? 0 : nz(yon[1])
-//
+ (long_exit and nz(yon[1]) == 1) or (short_exit and nz(yon[1]) == -1) ? 0 : 
+ nz(yon[1])
 
 // Yön Çıktısı
 plot(yon, "Yön", display=display.data_window, precision=0)
