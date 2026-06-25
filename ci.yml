@@ -1,0 +1,2 @@
+- name: AI Assessment Comment Labeler
+  uses: github/ai-assessment-comment-labeler@v1.0.0
