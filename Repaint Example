@@ -1,0 +1,25 @@
+// Bkz. Repaint Nedir? https://prnt.sc/DwX_ehbqPKW6 
+// Gelecekten veri çalalım: gelecek_fiyat değişkeni hep mevcut kapanışa eşit olacağı için, bu indikatör gerçek piyasada bütün parayı kaybetmenizi garanti eder!
+// Yüksek zaman diliminden (D) gelecekteki close'u çekiyoruz. 
+// lookahead = barmerge.lookahead_on olduğu için backtest motoruna takla attırıp tarihi barlarda geleceği görüyoruz!
+// Sinyaller: Gelecekte fiyat şu ankinden büyükse Long, düşükse Short.
+
+//@version=6
+strategy("Über Para Makinesi - ☢️ Crazy Profit ☢️", overlay=true, 
+ calc_on_every_tick=true, initial_capital=1000, margin_long=100, margin_short=100, default_qty_type=strategy.percent_of_equity, default_qty_value=100) 
+medyum = input.bool(true, title="Medyum Mod", 
+ tooltip="Aktive edildiğinde barmerge.lookahead_on ile yarının/sonraki barın kapanışını bugünden 'görür'. Backtestte %100.000 kâr yazar, gerçek piyasada donunuza kadar alırlar.")
+kolpa_htf = timeframe.isseconds ? "1" : timeframe.isminutes ? (timeframe.multiplier <= 15 ? "60" : "D") : timeframe.isdaily ? "W" : "M"    
+[kolpa_high, kolpa_low] = request.security(syminfo.tickerid, kolpa_htf, [high, low], lookahead = barmerge.lookahead_on)
+kolpa_miktar = math.max(0, math.min((strategy.equity / close) * 0.95, 999000000000)) // Pine motoru devasa kârları üretirken rakamın büyüklüğü nedeniyle sapıtmasın.
+if medyum
+    strategy.entry("King Long", strategy.long, qty=kolpa_miktar, limit=kolpa_low)
+    strategy.entry("King Short", strategy.short, qty=kolpa_miktar, limit=kolpa_high)
+else
+    strategy.cancel_all()
+var tb = table.new(position.top_center, 1, 1)
+if barstate.islastconfirmedhistory or barstate.isrealtime
+    if medyum
+        table.cell(tb, 0, 0, "Sinyaller ironiden ibarettir. (Bkz. Repaint nedir?)\n\nKonvansiyonel sosyal medya dingili 'vibe-coder' tayfaya aldanmayınız!\n\n☭", text_color=#2962ff)
+    else
+        table.cell(tb, 0, 0, "Yok öyle bir sinyal!", text_color=#2962ff)
