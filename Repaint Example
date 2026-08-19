@@ -1,4 +1,4 @@
-// Bkz. Repaint Nedir? https://prnt.sc/DwX_ehbqPKW6 
+// Bkz. Repaint Nedir? Açıklama linki: https://prnt.sc/DwX_ehbqPKW6 
 // Gelecekten veri çalalım: gelecek_fiyat değişkeni hep mevcut kapanışa eşit olacağı için, bu indikatör gerçek piyasada bütün parayı kaybetmenizi garanti eder!
 // Yüksek zaman diliminden (D) gelecekteki close'u çekiyoruz. 
 // lookahead = barmerge.lookahead_on olduğu için backtest motoruna takla attırıp tarihi barlarda geleceği görüyoruz!
